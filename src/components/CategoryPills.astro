@@ -18,14 +18,17 @@ const counts = Object.fromEntries(
 
 // Tabs (underline), not chips — deliberately different from CountryPills'
 // filled-pill style so the two filter rows never read as one group.
-const pill = 'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors';
+const pill = 'flex min-h-11 shrink-0 snap-start items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors';
 const resting = 'border-transparent text-stone-500 hover:text-stone-900';
 const allActive = 'border-stone-900 text-stone-900';
 ---
 
 <div>
   <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500">Category</p>
-  <nav class="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-stone-200 text-sm" aria-label="Filter by category">
+  <nav
+    class="scrollbar-hide flex snap-x items-center gap-x-6 overflow-x-auto border-b border-stone-200 text-sm"
+    aria-label="Filter by category"
+  >
     <a
       href="/"
       aria-current={!active ? 'true' : undefined}
