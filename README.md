@@ -29,3 +29,9 @@ Before adding a new entry, check whether an existing entry in another country al
 ## Deploy
 
 `main` and `production` are both live branches. `production` auto-deploys to etiquetteness.com via Cloudflare Workers Builds on push — treat pushing to it as a real deploy, not a routine git operation.
+
+Pull requests into `main` run a build check (`.github/workflows/build.yml`) that has to pass before merging.
+
+## License
+
+Code is [MIT](LICENSE). The etiquette entries under `src/content/etiquette/` are separately licensed [CC BY-NC 4.0](src/content/etiquette/LICENSE) — reusable with attribution, non-commercial only.
