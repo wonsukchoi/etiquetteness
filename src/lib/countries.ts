@@ -12,6 +12,8 @@ export const COUNTRIES = [
   'mexico',
   'guam',
   'philippines',
+  'brazil',
+  'vietnam',
   'global',
 ] as const;
 
@@ -104,6 +106,18 @@ export const COUNTRY_META: Record<Country, { label: string; code: string; descri
     code: 'PH',
     description:
       "Filipino etiquette builds respect directly into the language: adding \"po\" or \"opo\" when speaking to someone older or in authority is a small habit that signals real deference — dropping it can read as overly familiar even when nothing else about the exchange is impolite.",
+  },
+  brazil: {
+    label: 'Brazil',
+    code: 'BR',
+    description:
+      "Brazilian etiquette runs warm and physical — a handshake gives way to a cheek kiss once you know someone, personal space runs closer than most Western visitors expect, and showing up exactly on time to a dinner can actually catch your host off guard (hora brasileira). Gift-giving carries real symbolic weight too: purple reads as funeral colors, and anything sharp suggests you want to cut the relationship off.",
+  },
+  vietnam: {
+    label: 'Vietnam',
+    code: 'VN',
+    description:
+      "Vietnamese etiquette runs on Confucian-rooted respect for age and hierarchy — greeting elders first, addressing people with kinship terms instead of names, exchanging business cards with both hands. The same taboos around chopsticks upright in rice and funeral-colored gift wrap show up in China and Japan too, but they're taken just as seriously here.",
   },
   global: {
     label: 'Global',
