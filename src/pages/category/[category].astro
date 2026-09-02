@@ -29,7 +29,7 @@ const meta = CATEGORY_META[category];
   </div>
 
   {entries.length > 0 ? (
-    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-pagefind-ignore>
       {
         entries.map((entry) => (
           <EntryCard

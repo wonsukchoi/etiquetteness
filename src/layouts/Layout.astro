@@ -4,9 +4,17 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description?: string;
+  type?: 'website' | 'article';
 }
 
-const { title, description = 'Unwritten etiquette rules from around the world.' } = Astro.props;
+const {
+  title,
+  description = 'Unwritten etiquette rules from around the world.',
+  type = 'website',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness`;
 ---
 
 <!doctype html>
@@ -16,28 +24,44 @@ const { title, description = 'Unwritten etiquette rules from around the world.' 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title} · Etiquetteness</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="Etiquetteness" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <slot name="head" />
   </head>
   <body class="min-h-screen bg-[#fbf9f6] text-stone-900">
     <header class="border-b border-stone-200 bg-[#fbf9f6]/90 backdrop-blur">
       <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <a href="/" class="font-serif text-xl font-semibold tracking-tight">Etiquetteness</a>
-        <div class="flex gap-6 text-sm text-stone-500">
+        <div class="flex items-center gap-6 text-sm text-stone-500">
           <a href="/category/dining" class="hover:text-stone-900">Dining</a>
           <a href="/category/business" class="hover:text-stone-900">Business</a>
           <a href="/category/travel" class="hover:text-stone-900">Travel</a>
           <a href="/category/social" class="hover:text-stone-900">Social</a>
+          <a href="/search" class="flex min-h-11 items-center font-medium text-stone-900" aria-label="Search">
+            Search
+          </a>
         </div>
       </nav>
     </header>
-    <main class="mx-auto max-w-5xl px-6 py-12">
+    <main class="mx-auto max-w-5xl px-6 py-12" data-pagefind-body>
       <slot />
     </main>
     <footer class="mx-auto max-w-5xl px-6 py-12 text-sm text-stone-400">

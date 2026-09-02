@@ -7,9 +7,22 @@ import { getCollection } from 'astro:content';
 const entries = (await getCollection('etiquette')).sort((a, b) =>
   a.data.title.localeCompare(b.data.title)
 );
+
+const description =
+  'The etiquette nobody writes down — unwritten cultural and social rules, by country and situation.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Etiquetteness',
+  description,
+  url: Astro.site,
+};
 ---
 
-<Layout title="Unwritten rules from around the world">
+<Layout title="Etiquetteness" description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
   <div class="max-w-2xl">
     <h1 class="font-serif text-4xl font-medium tracking-tight sm:text-5xl">
       The etiquette nobody writes down.
@@ -24,7 +37,7 @@ const entries = (await getCollection('etiquette')).sort((a, b) =>
     <CategoryPills />
   </div>
 
-  <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-pagefind-ignore>
     {
       entries.map((entry) => (
         <EntryCard
