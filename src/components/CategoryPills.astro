@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import { CATEGORIES, CATEGORY_META } from '../lib/categories';
 
 interface Props {
@@ -6,33 +7,44 @@ interface Props {
 }
 
 const { active } = Astro.props;
+
+const entries = await getCollection('etiquette');
+const counts = Object.fromEntries(
+  CATEGORIES.map((c) => [c, entries.filter((e) => e.data.category === c).length])
+);
 ---
 
-<div class="flex flex-wrap gap-2">
+<nav class="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-stone-200 text-sm" aria-label="Filter by category">
   <a
     href="/"
     class:list={[
-      'flex min-h-11 items-center rounded-full border px-4 text-sm font-medium transition-colors',
+      'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
       !active
-        ? 'border-stone-900 bg-stone-900 text-white'
-        : 'border-stone-200 text-stone-600 hover:border-stone-400',
+        ? 'border-stone-900 text-stone-900'
+        : 'border-transparent text-stone-500 hover:text-stone-900',
     ]}
   >
-    All
+    All <span class="text-stone-400">{entries.length}</span>
   </a>
   {
     CATEGORIES.map((category) => (
       <a
         href={`/category/${category}`}
         class:list={[
-          'flex min-h-11 items-center rounded-full border px-4 text-sm font-medium transition-colors',
+          'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
           active === category
-            ? 'border-stone-900 bg-stone-900 text-white'
-            : 'border-stone-200 text-stone-600 hover:border-stone-400',
+            ? 'text-stone-900'
+            : 'border-transparent text-stone-500 hover:text-stone-900',
         ]}
+        style={active === category ? `border-color: ${CATEGORY_META[category].color}` : undefined}
       >
-        {CATEGORY_META[category].emoji} {CATEGORY_META[category].label}
+        <span
+          class="h-1.5 w-1.5 shrink-0 rounded-full"
+          style={`background-color: ${CATEGORY_META[category].color}`}
+          aria-hidden="true"
+        />
+        {CATEGORY_META[category].label} <span class="text-stone-400">{counts[category]}</span>
       </a>
     ))
   }
-</div>
+</nav>

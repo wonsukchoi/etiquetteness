@@ -16,13 +16,14 @@ const meta = CATEGORY_META[category];
 <a
   href={href}
   aria-label={`${title}, ${summary}`}
-  class="group flex items-center justify-between gap-4 py-4 transition-colors duration-200 hover:bg-stone-100/60 -mx-3 px-3 rounded-lg"
+  class="entry-row group flex items-center gap-4 py-4 transition-colors duration-200 hover:bg-stone-100/60 -mx-3 px-3 rounded-lg"
 >
-  <h3 class="font-display text-lg font-semibold leading-snug text-stone-900 group-hover:text-stone-600">
+  <span class="entry-index w-6 shrink-0 text-right font-mono text-xs tabular-nums text-stone-300" aria-hidden="true"></span>
+  <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true"></span>
+  <h3 class="min-w-0 flex-1 truncate font-display text-lg font-semibold leading-snug text-stone-900 group-hover:text-stone-600">
     {title}
   </h3>
-  <div class="flex shrink-0 items-center gap-2 text-xs font-medium uppercase tracking-wide text-stone-400">
-    <span aria-hidden="true">{meta.emoji}</span>
+  <div class="flex shrink-0 items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-stone-400">
     <span class="hidden sm:inline">{country}</span>
     <span class="hidden sm:inline" aria-hidden="true">·</span>
     <span>{meta.label}</span>

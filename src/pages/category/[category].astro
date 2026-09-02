@@ -19,9 +19,10 @@ const meta = CATEGORY_META[category];
 ---
 
 <Layout title={`${meta.label} etiquette`}>
-  <h1 class="font-display text-5xl font-semibold">
-    {meta.emoji} {meta.label}
-  </h1>
+  <div class="flex items-center gap-3">
+    <span class="h-3 w-3 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
+    <h1 class="font-display text-5xl font-semibold">{meta.label}</h1>
+  </div>
   <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
 
   <div class="mt-8">
@@ -29,7 +30,7 @@ const meta = CATEGORY_META[category];
   </div>
 
   {entries.length > 0 ? (
-    <div class="mt-8 divide-y divide-stone-200" data-pagefind-ignore>
+    <div class="entry-list mt-8 divide-y divide-stone-200" data-pagefind-ignore>
       {
         entries.map((entry) => (
           <EntryCard

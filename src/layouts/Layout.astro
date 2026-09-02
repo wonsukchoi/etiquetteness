@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { CATEGORY_META } from '../lib/categories';
 
 interface Props {
   title: string;
@@ -47,14 +48,19 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
     <slot name="head" />
   </head>
   <body class="min-h-screen bg-[#fbf9f6] text-stone-900">
-    <header class="border-b border-stone-200 bg-[#fbf9f6]/90 backdrop-blur">
+    <header class="border-b-2 border-stone-900 bg-[#fbf9f6]/90 backdrop-blur">
       <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-        <a href="/" class="font-display text-xl font-semibold">Etiquetteness</a>
-        <div class="flex items-center gap-6 text-sm text-stone-500">
-          <a href="/category/dining" class="hover:text-stone-900">Dining</a>
-          <a href="/category/business" class="hover:text-stone-900">Business</a>
-          <a href="/category/travel" class="hover:text-stone-900">Travel</a>
-          <a href="/category/social" class="hover:text-stone-900">Social</a>
+        <a href="/" class="leading-tight">
+          <span class="block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Culture &amp; Custom</span>
+          <span class="font-display text-xl font-semibold">Etiquetteness</span>
+        </a>
+        <div class="flex items-center gap-5 text-sm text-stone-500">
+          {Object.entries(CATEGORY_META).map(([slug, meta]) => (
+            <a href={`/category/${slug}`} class="flex items-center gap-1.5 hover:text-stone-900">
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
+              {meta.label}
+            </a>
+          ))}
           <a href="/search" class="flex min-h-11 items-center font-medium text-stone-900" aria-label="Search">
             Search
           </a>
@@ -68,11 +74,10 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
       <div class="mx-auto max-w-5xl px-6 py-16">
         <div class="flex flex-wrap items-center justify-between gap-4 text-sm">
           <a href="/" class="font-display text-lg font-semibold text-white">Etiquetteness</a>
-          <div class="flex gap-6 text-stone-400">
-            <a href="/category/dining" class="hover:text-white">Dining</a>
-            <a href="/category/business" class="hover:text-white">Business</a>
-            <a href="/category/travel" class="hover:text-white">Travel</a>
-            <a href="/category/social" class="hover:text-white">Social</a>
+          <div class="flex flex-wrap gap-5 text-stone-400">
+            {Object.entries(CATEGORY_META).map(([slug, meta]) => (
+              <a href={`/category/${slug}`} class="hover:text-white">{meta.label}</a>
+            ))}
             <a href="/search" class="hover:text-white">Search</a>
           </div>
         </div>
