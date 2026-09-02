@@ -45,10 +45,11 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <script defer src="https://analytics.wonsukchoi.com/script.js" data-website-id="ed6491aa-d209-466a-9124-919d90023a0b"></script>
     <slot name="head" />
   </head>
   <body class="min-h-screen bg-[#fbf9f6] text-stone-900">
-    <header class="border-b-2 border-stone-900 bg-[#fbf9f6]/90 backdrop-blur">
+    <header class="bg-[#fbf9f6]/90 backdrop-blur">
       <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <a href="/" class="leading-tight">
           <span class="block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Culture &amp; Custom</span>
@@ -56,8 +57,7 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
         </a>
         <div class="flex items-center gap-5 text-sm text-stone-500">
           {Object.entries(CATEGORY_META).map(([slug, meta]) => (
-            <a href={`/category/${slug}`} class="flex items-center gap-1.5 hover:text-stone-900">
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
+            <a href={`/category/${slug}`} class="hover:text-stone-900">
               {meta.label}
             </a>
           ))}

@@ -1,0 +1,14 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-08-31",
+	"name": "etiquetteness",
+	"assets": {
+		"directory": "./dist"
+	},
+	"routes": [
+		{ "pattern": "etiquetteness.com", "custom_domain": true }
+	],
+	"observability": {
+		"enabled": true
+	}
+}
