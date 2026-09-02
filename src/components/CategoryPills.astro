@@ -24,39 +24,42 @@ const allActive = 'border-stone-900 text-stone-900';
 ---
 
 <div>
-  <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">Category</p>
+  <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500">Category</p>
   <nav class="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-stone-200 text-sm" aria-label="Filter by category">
     <a
       href="/"
+      aria-current={!active ? 'true' : undefined}
       data-filter-key={filterable ? 'category' : undefined}
       data-filter-value={filterable ? '' : undefined}
       data-resting-class={filterable ? resting : undefined}
       data-active-class={filterable ? allActive : undefined}
       class:list={[pill, !active ? allActive : resting]}
     >
-      All <span class="text-stone-400">{entries.length}</span>
+      All <span class="text-stone-500">{entries.length}</span>
     </a>
     {
       CATEGORIES.map((category) => {
+        const isActive = active === category;
         const categoryActive = `text-stone-900`;
         const activeStyle = `border-color: ${CATEGORY_META[category].color}`;
         return (
           <a
             href={`/category/${category}`}
+            aria-current={isActive ? 'true' : undefined}
             data-filter-key={filterable ? 'category' : undefined}
             data-filter-value={filterable ? category : undefined}
             data-resting-class={filterable ? resting : undefined}
             data-active-class={filterable ? categoryActive : undefined}
             data-active-style={filterable ? activeStyle : undefined}
-            class:list={[pill, active === category ? categoryActive : resting]}
-            style={active === category ? activeStyle : undefined}
+            class:list={[pill, isActive ? categoryActive : resting]}
+            style={isActive ? activeStyle : undefined}
           >
             <span
               class="h-1.5 w-1.5 shrink-0 rounded-full"
               style={`background-color: ${CATEGORY_META[category].color}`}
               aria-hidden="true"
             />
-            {CATEGORY_META[category].label} <span class="text-stone-400">{counts[category]}</span>
+            {CATEGORY_META[category].label} <span class="text-stone-500">{counts[category]}</span>
           </a>
         );
       })

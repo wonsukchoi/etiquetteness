@@ -58,8 +58,9 @@ const jsonLd = {
     <CountryPills filterable />
   </div>
 
-  <p class="mt-6 text-sm text-stone-500" data-result-count>{entries.length} rules</p>
+  <p class="mt-6 text-sm text-stone-500" data-result-count aria-live="polite">{entries.length} rules</p>
 
+  <h2 class="sr-only">All rules</h2>
   <div class="entry-list mt-2 divide-y divide-stone-200" data-entry-list data-pagefind-ignore>
     {
       entries.map((entry) => (
@@ -115,6 +116,16 @@ const jsonLd = {
           pill.classList.remove(...activeCls, ...restingCls);
           pill.classList.add(...(isActive ? activeCls : restingCls));
           if (pill.dataset.activeStyle) pill.style.cssText = isActive ? pill.dataset.activeStyle : '';
+          if (isActive) pill.setAttribute('aria-current', 'true');
+          else pill.removeAttribute('aria-current');
+
+          const countEl = pill.querySelector<HTMLElement>('.pill-count');
+          if (countEl && (pill.dataset.countActiveClass || pill.dataset.countRestingClass)) {
+            const activeCountCls = (pill.dataset.countActiveClass ?? '').split(' ').filter(Boolean);
+            const restingCountCls = (pill.dataset.countRestingClass ?? '').split(' ').filter(Boolean);
+            countEl.classList.remove(...activeCountCls, ...restingCountCls);
+            countEl.classList.add(...(isActive ? activeCountCls : restingCountCls));
+          }
 
           const next = new URLSearchParams(params);
           if (value) next.set(key, value);

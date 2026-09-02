@@ -32,6 +32,8 @@ const meta = CATEGORY_META[category];
   </div>
 
   {entries.length > 0 ? (
+    <>
+    <h2 class="sr-only">{meta.label} rules</h2>
     <div class="entry-list mt-8 divide-y divide-stone-200" data-pagefind-ignore>
       {
         entries.map((entry) => (
@@ -45,6 +47,7 @@ const meta = CATEGORY_META[category];
         ))
       }
     </div>
+    </>
   ) : (
     <div class="mt-8 rounded-xl border border-dashed border-stone-300 p-10 text-center text-stone-500">
       <p>No {meta.label.toLowerCase()} rules yet, check back soon.</p>
