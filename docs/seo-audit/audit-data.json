@@ -1,0 +1,202 @@
+{
+  "summary": {
+    "health_score": 49,
+    "business_type": "Editorial/reference site (programmatic country x category etiquette-rule database, Astro static on Cloudflare)",
+    "top_findings": [
+      "No About, Contact, Privacy, or Terms pages exist anywhere (all 404); zero author attribution site-wide",
+      "dateModified is identical to the crawl/build date on every page, no datePublished exists - reads as fabricated freshness",
+      "Article body copy is 50-90 words per page; category/country hub pages have ~0 unique words",
+      "Every internal link triggers an unnecessary 307 redirect due to a trailing-slash mismatch",
+      "Zero images anywhere on the site despite inherently visual/gestural topics"
+    ],
+    "quick_wins": [
+      "Set trailingSlash: 'always' in astro.config.mjs to remove the site-wide 307 redirect",
+      "Add Cache-Control: public, max-age=31536000, immutable for /_astro/* assets",
+      "Add security headers (HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, CSP) via Cloudflare _headers/Worker",
+      "Add /llms.txt indexing the 6 categories and top articles",
+      "Differentiate the duplicate meta description shared by every category/country page"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 70,
+      "what_works": [
+        "Fully static/SSR Astro site, zero JS dependency for indexable content",
+        "robots.txt valid and correctly points to sitemap-index.xml",
+        "57/57 sitemap URLs return 200 with zero redirects",
+        "Correct self-referencing canonicals everywhere, no accidental noindex",
+        "HTTP to HTTPS redirect works, Brotli compression enabled",
+        "Clean, human-readable URL taxonomy"
+      ],
+      "findings": [
+        {"title": "Zero security headers site-wide", "severity": "Critical", "description": "No HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, or Permissions-Policy on any page or asset.", "recommendation": "Add a Cloudflare _headers file or Worker middleware setting the standard security header set."},
+        {"title": "Every internal link triggers a 307 redirect", "severity": "Critical", "description": "All internal hrefs (nav, category chips, cross-links, breadcrumb JSON-LD item URLs) omit the trailing slash and 307-redirect to the canonical trailing-slash URL.", "recommendation": "Set trailingSlash: 'always' in astro.config.mjs and fix breadcrumb URL generation to match."},
+        {"title": "Redirect uses 307 instead of 301/308", "severity": "High", "description": "The trailing-slash redirect is a permanent URL-structure decision but returns a temporary status code.", "recommendation": "Override with an explicit 301/308 via Worker/redirect rule, or eliminate the redirect entirely per the fix above."},
+        {"title": "Hashed static assets not cached long-term", "severity": "High", "description": "/_astro/*.css is served with max-age=0, must-revalidate despite content-hashed filenames safe to cache forever.", "recommendation": "Add a _headers rule: Cache-Control: public, max-age=31536000, immutable for /_astro/*."},
+        {"title": "Duplicate meta descriptions across category/country pages", "severity": "Medium", "description": "All category pages share the identical description 'Unwritten etiquette rules from around the world.'", "recommendation": "Template the description per category/country name."},
+        {"title": "Thin content at scale across 37 article pages", "severity": "Medium", "description": "Unique body copy runs ~500-700 characters per article.", "recommendation": "Add regional variation, exceptions, and context per rule."},
+        {"title": "BreadcrumbList JSON-LD uses non-canonical URLs", "severity": "Medium", "description": "Breadcrumb item URLs omit the trailing slash and will 307-redirect if followed.", "recommendation": "Generate breadcrumb item URLs from the same canonical-URL helper used for link rel canonical."},
+        {"title": "No og:image/twitter:image sitewide", "severity": "Medium", "description": "No page includes an og:image or twitter:image tag; twitter:card is summary not summary_large_image.", "recommendation": "Generate a branded OG image template and add og:image once images exist."},
+        {"title": "/search/ is in the sitemap with no indexable content", "severity": "Medium", "description": "Search results render client-side via Pagefind; raw indexed content is essentially empty.", "recommendation": "Add noindex,follow to /search/ and remove it from the sitemap."},
+        {"title": "Article schema missing image, author, datePublished", "severity": "Medium", "description": "Current Article JSON-LD omits fields recommended by Google for full rich-result eligibility.", "recommendation": "Add author (Organization) and datePublished now; add image once real images exist."},
+        {"title": "Empty-body 404 page", "severity": "Low", "description": "404 responses return content-length 0 with no navigation or search box.", "recommendation": "Ship a real 404 page with a link to the homepage and search."},
+        {"title": "www subdomain has no DNS record", "severity": "Low", "description": "www.etiquetteness.com fails to resolve rather than redirecting to the apex domain.", "recommendation": "Add a DNS record and redirect rule for www to apex."},
+        {"title": "Sitemap has no lastmod dates", "severity": "Low", "description": "sitemap-0.xml includes loc only, no lastmod for any of the 57 URLs.", "recommendation": "Emit lastmod sourced from real content-edit history."},
+        {"title": "IndexNow protocol not implemented", "severity": "Info", "description": "No IndexNow key file or integration found.", "recommendation": "Add IndexNow given the existing Cloudflare Workers deploy pipeline."}
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 34,
+      "what_works": [
+        "Clean heading hierarchy with quotable, self-contained H1 claims",
+        "Article + BreadcrumbList JSON-LD present and well-formed",
+        "Consistent, unique, descriptive title tag pattern"
+      ],
+      "findings": [
+        {"title": "No About, Contact, Privacy, Terms, or methodology pages exist", "severity": "Critical", "description": "All verified 404; none appear in the sitemap. Trustworthiness (30% of E-E-A-T weight) has no baseline signals.", "recommendation": "Publish About and Contact pages stating who runs the site and how to reach them."},
+        {"title": "No author attribution anywhere", "severity": "Critical", "description": "No byline, editorial team page, or credentials on any page sampled.", "recommendation": "Add a visible author/editorial-team byline or a site-wide methodology page."},
+        {"title": "Article body copy is extremely thin", "severity": "Critical", "description": "50-72 words per article across 9 sampled pages; category/country hubs have ~0 unique body copy.", "recommendation": "Deepen each article with 150-300 words of genuine context: regional variation, exceptions, why the custom exists."},
+        {"title": "dateModified equals crawl date on every article", "severity": "High", "description": "No datePublished exists; dateModified appears to be a build timestamp rather than a genuine edit date.", "recommendation": "Populate datePublished distinct from dateModified, sourced from real content history."},
+        {"title": "Meta descriptions identical across category/country pages", "severity": "High", "description": "9/9 checked pages share the exact same description.", "recommendation": "Differentiate descriptions per page."},
+        {"title": "Single-source citation per fact with no cross-verification", "severity": "High", "description": "Each article cites exactly one third-party source with no independent verification shown.", "recommendation": "Add a second corroborating source where feasible."},
+        {"title": "Homogeneous template with no differentiation signal", "severity": "Medium", "description": "All 37 pages share identical structure with no editorial distinctiveness.", "recommendation": "Add unique context/depth per entry."},
+        {"title": "No internal contextual linking within body copy", "severity": "Medium", "description": "Only links are the outbound citation and same-country related links.", "recommendation": "Link to related categories, not just same-country entries."},
+        {"title": "Undefined severity tag (strict/casual)", "severity": "Medium", "description": "No legend or methodology explaining the classification.", "recommendation": "Add a methodology page defining the tag criteria."}
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 50,
+      "what_works": [
+        "Unique, descriptive title tags following a consistent pattern",
+        "Single H1 per page matching a clear, quotable claim",
+        "Clean URL structure"
+      ],
+      "findings": [
+        {"title": "Duplicate meta descriptions across category/country pages", "severity": "High", "description": "Same issue as flagged in Technical/Content: all category pages share one description.", "recommendation": "Template descriptions per page."},
+        {"title": "Internal linking gaps", "severity": "Medium", "description": "No cross-category internal links within body copy; only same-country related links.", "recommendation": "Add contextual internal links to related categories."},
+        {"title": "Systemic redirect on internal links", "severity": "High", "description": "Non-trailing-slash hrefs cause a 307 on nearly every internal navigation.", "recommendation": "See Technical SEO fix #1."}
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 40,
+      "what_works": [
+        "All markup is valid JSON-LD using https://schema.org context",
+        "Article + BreadcrumbList present and structurally correct on all 37 article pages",
+        "Breadcrumb target URLs verified live (200 OK)"
+      ],
+      "findings": [
+        {"title": "about property is a bare string, not a Thing entity", "severity": "High", "description": "Schema.org's about property range is Thing; a plain country-name string is invalid.", "recommendation": "Wrap in a Country/Place entity."},
+        {"title": "No author property anywhere", "severity": "High", "description": "No author field and no visible byline in rendered HTML.", "recommendation": "Add author as Organization until real bylines exist."},
+        {"title": "No image property", "severity": "High", "description": "Site ships zero images; Article image field is required in practice for enhanced rich results.", "recommendation": "Add once real per-article images exist; do not use placeholders."},
+        {"title": "dateModified identical across all sampled articles", "severity": "High", "description": "Matches request date on every article regardless of topic, suggesting it is computed at build/request time.", "recommendation": "Derive from real content-edit history."},
+        {"title": "Category pages have zero JSON-LD", "severity": "High", "description": "6 substantial, internally-linked hub pages carry no structured data at all.", "recommendation": "Add CollectionPage + BreadcrumbList to category pages."},
+        {"title": "No Organization/publisher schema", "severity": "Medium", "description": "No Organization entity exists anywhere on the site to reference from Articles.", "recommendation": "Add Organization schema once, reference via publisher on every Article."},
+        {"title": "No datePublished field", "severity": "Medium", "description": "Only dateModified is present.", "recommendation": "Add datePublished distinct from dateModified."},
+        {"title": "No homepage SearchAction", "severity": "Medium", "description": "Homepage WebSite schema has no potentialAction despite a working /search/ page.", "recommendation": "Add SearchAction pointing to /search."},
+        {"title": "Missing @id/mainEntityOfPage", "severity": "Low", "description": "Not required but recommended for entity de-duplication.", "recommendation": "Add @id references across the @graph."},
+        {"title": "Breadcrumb names are raw slugs, not title-cased", "severity": "Low", "description": "e.g. 'japan' instead of 'Japan' in BreadcrumbList display names.", "recommendation": "Title-case breadcrumb names."}
+      ]
+    },
+    {
+      "name": "Performance",
+      "score": 65,
+      "what_works": [
+        "No images anywhere means no LCP-image or CLS-image risk",
+        "Lean DOM (90-380 tags), no custom application JS on content pages",
+        "font-display: swap already in use, mitigating invisible-text risk"
+      ],
+      "findings": [
+        {"title": "Every internal link triggers a 307 redirect", "severity": "High", "description": "Adds an extra round trip (~450-600ms observed) before nearly every internal navigation completes.", "recommendation": "Set trailingSlash: 'always' in astro.config.mjs."},
+        {"title": "Render-blocking Google Fonts stylesheet", "severity": "Medium", "description": "Every page loads fonts.googleapis.com synchronously in head; preconnect and font-display:swap are already correctly set.", "recommendation": "Self-host the two variable woff2 files and preload the primary above-the-fold weight."},
+        {"title": "Hashed assets not cached long-term", "severity": "Medium", "description": "Same issue as Technical: /_astro/* served with max-age=0, must-revalidate.", "recommendation": "Add immutable long-lived caching via Cloudflare _headers."},
+        {"title": "pagefind-ui.js loads without defer", "severity": "Low", "description": "120KB script on /search has no defer/async attribute.", "recommendation": "Add defer to the script tag."}
+      ]
+    },
+    {
+      "name": "AI Search Readiness (GEO)",
+      "score": 45,
+      "what_works": [
+        "AI crawlers (GPTBot, ClaudeBot, PerplexityBot, OAI-SearchBot, CCBot, Google-Extended) all confirmed allowed via robots.txt and live UA spot-check",
+        "Fully SSR/static content present in raw pre-JS HTML",
+        "Source attribution present and linked on articles"
+      ],
+      "findings": [
+        {"title": "llms.txt missing", "severity": "Medium", "description": "https://etiquetteness.com/llms.txt returns 404.", "recommendation": "Add /llms.txt indexing categories and top articles."},
+        {"title": "Passage length too short for optimal AI citation", "severity": "Medium", "description": "Body text runs 71-90 words vs. the 134-167 word optimum; zero lists found on any sampled page.", "recommendation": "Expand entries with a Do/Don't list and one FAQ-style H2 each."},
+        {"title": "No question-based in-content headings", "severity": "Medium", "description": "Only headings are boilerplate 'More from X' related-link blocks.", "recommendation": "Add natural-language question headings mapping to likely queries."},
+        {"title": "Zero multi-modal content", "severity": "High", "description": "No images, figures, video, or tables on any sampled article despite visually-gestural topics.", "recommendation": "Add at least one illustrative image per article with descriptive alt text."},
+        {"title": "No About page or Organization/author schema", "severity": "High", "description": "Same trust gap flagged by Content and Schema audits, also weakens AI citation-selection authority signals.", "recommendation": "Add About page plus Organization schema with sameAs links."},
+        {"title": "dateModified unreliable freshness signal", "severity": "High", "description": "Identical 'today' timestamp on every article, no datePublished, zero sitemap lastmod entries.", "recommendation": "Fix dates to reflect real content history."}
+      ]
+    },
+    {
+      "name": "Images",
+      "score": 10,
+      "what_works": [],
+      "findings": [
+        {"title": "No images exist anywhere on the site", "severity": "Critical", "description": "Zero img, picture, figure, or background-image elements across homepage, category, country, and all sampled article pages, flagged independently by Technical, Schema, GEO, and SXO.", "recommendation": "Add at least one illustrative, alt-texted image per article, prioritizing the most visually-gestural topics (bowing, cheek-kissing, chopstick use, hand placement)."}
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {
+        "name": "Phase 1: Critical Fixes",
+        "timeframe": "Week 1",
+        "items": [
+          "Set trailingSlash: 'always' in astro.config.mjs and fix breadcrumb URL generation",
+          "Add security headers (HSTS, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, CSP) via Cloudflare _headers/Worker",
+          "Publish About + Contact pages",
+          "Fix dateModified/datePublished to reflect real content history; add sitemap lastmod",
+          "Fix Article schema about property to a Country/Place entity instead of a bare string"
+        ]
+      },
+      {
+        "name": "Phase 2: High-Impact Improvements",
+        "timeframe": "Weeks 2-3",
+        "items": [
+          "Add long-lived immutable caching for /_astro/* hashed assets",
+          "Add Organization + publisher schema site-wide, referenced from every Article",
+          "Add CollectionPage + BreadcrumbList JSON-LD to category pages",
+          "Differentiate meta descriptions across all category/country pages",
+          "Add /llms.txt indexing categories and top articles",
+          "Change trailing-slash redirect status from 307 to 301/308 for any residual cases",
+          "Add noindex,follow to /search/ and remove it from the sitemap"
+        ]
+      },
+      {
+        "name": "Phase 3: Content & Authority",
+        "timeframe": "Month 2",
+        "items": [
+          "Deepen every article to ~140-160 words with a Do/Dont list and one FAQ-style H2",
+          "Add a second corroborating source per fact where feasible",
+          "Add at least one illustrative, alt-texted image per article",
+          "Build real guide-depth content at the category/country hub level",
+          "Add FAQPage/HowTo/ItemList schema where genuine Q&A/how-to content exists",
+          "Add a methodology page explaining the strict/casual severity tag",
+          "Run the seo-programmatic skill for a dedicated thin-page-ratio review"
+        ]
+      },
+      {
+        "name": "Phase 4: Monitoring & Iteration",
+        "timeframe": "Ongoing",
+        "items": [
+          "Add www DNS record and redirect to apex",
+          "Ship a real 404 page with navigation and search",
+          "Add IndexNow protocol integration to the deploy pipeline",
+          "Re-run Performance and SXO audits with real Lighthouse/CrUX/PageSpeed and live SERP data",
+          "Begin off-site brand-mention building (YouTube, Reddit) for top categories",
+          "Explicitly decide and document AI crawler access policy"
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/ (not captured - no Playwright/browser access in this environment)"
+  }
+}
