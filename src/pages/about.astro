@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ArrowButton from '../components/ArrowButton.astro';
+import { getCollection } from 'astro:content';
+
+const entries = await getCollection('etiquette');
+const countryCount = new Set(entries.map((e) => e.data.country)).size;
+
+const description =
+  'Why Etiquetteness exists, how entries get sourced and checked, and what to do if one of them is wrong.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Etiquetteness',
+  description,
+  url: new URL('/about', Astro.site),
+};
+---
+
+<Layout title="About" description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="max-w-2xl">
+    <h1 class="font-display text-5xl font-semibold">About Etiquetteness</h1>
+    <p class="mt-4 text-lg text-stone-600">
+      Most travel advice tells you what to see. Almost none of it tells you which hand to
+      pour with, or why leaving your chopsticks standing in a bowl of rice can genuinely
+      unsettle a room. Etiquetteness is a running collection of that second kind of
+      knowledge: the unwritten rules people expect visitors to already know.
+    </p>
+
+    <p class="mt-10 text-sm font-medium uppercase tracking-[0.2em] text-stone-400">
+      Currently {entries.length} rules across {countryCount} countries
+    </p>
+
+    <h2 class="mt-14 font-display text-2xl font-semibold">How an entry gets made</h2>
+    <p class="mt-4 text-stone-600">
+      Every rule here starts from a real source, cited and linked at the bottom of the
+      entry, not a vague sense of "I heard somewhere that..." Each one also gets a plain
+      explanation of the reasoning behind the custom, not just the rule itself, since
+      "don't do X" is a lot easier to remember once you know why X reads as rude in the
+      first place.
+    </p>
+    <p class="mt-4 text-stone-600">
+      Sources get things wrong sometimes, and secondhand travel-blog etiquette advice has a
+      way of copying the same error from site to site. Where possible, entries get checked
+      against someone who actually grew up with the custom in question, rather than taken
+      at face value from a single article.
+    </p>
+
+    <h2 class="mt-14 font-display text-2xl font-semibold">If something here is wrong</h2>
+    <p class="mt-4 text-stone-600">
+      Etiquette is local, it changes over time, and a rule that's strict for one
+      generation can be casual for the next. If an entry is outdated, overstated, or
+      flatly wrong, that's worth fixing rather than leaving up. Treat anything here as a
+      starting point, not the final word, especially against someone who actually lives
+      the custom day to day.
+    </p>
+
+    <ArrowButton href="/" class="mt-10">Browse all entries</ArrowButton>
+  </div>
+</Layout>
