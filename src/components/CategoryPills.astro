@@ -54,11 +54,6 @@ const allActive = 'border-stone-900 text-stone-900';
             class:list={[pill, isActive ? categoryActive : resting]}
             style={isActive ? activeStyle : undefined}
           >
-            <span
-              class="h-1.5 w-1.5 shrink-0 rounded-full"
-              style={`background-color: ${CATEGORY_META[category].color}`}
-              aria-hidden="true"
-            />
             {CATEGORY_META[category].label} <span class="text-stone-500">{counts[category]}</span>
           </a>
         );
