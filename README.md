@@ -1,6 +1,6 @@
 # Etiquetteness
 
-The etiquette nobody writes down — unwritten cultural and social rules, by country and situation. Built with [Astro](https://astro.build), Tailwind CSS, and MDX content collections.
+The etiquette nobody writes down: unwritten cultural and social rules, by country and situation. Built with [Astro](https://astro.build), Tailwind CSS, and MDX content collections.
 
 ## Structure
 

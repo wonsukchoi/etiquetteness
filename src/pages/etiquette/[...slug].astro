@@ -97,7 +97,7 @@ const jsonLd = {
   {related.length > 0 && (
     <div class="mt-16 border-t border-stone-200 pt-10" data-pagefind-ignore>
       <h2 class="font-serif text-xl font-medium capitalize">More from {entry.data.country}</h2>
-      <div class="mt-6 grid gap-6 sm:grid-cols-3">
+      <div class="mt-6 divide-y divide-stone-200">
         {related.map((r) => (
           <EntryCard
             href={`/etiquette/${r.id}`}
