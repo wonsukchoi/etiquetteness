@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import { CATEGORY_META } from '../../lib/categories';
 import { COUNTRY_META, type Country } from '../../lib/countries';
-import { getPublishedDates } from '../../lib/publishedDates';
+import { ORGANIZATION_ID, WEBSITE_ID } from '../../lib/organization';
 import { getCollection, render } from 'astro:content';
 import { FiChevronRight, FiAlertTriangle, FiInfo, FiClock } from 'react-icons/fi';
 
@@ -28,8 +28,8 @@ const relatedByCategory = entries
   .filter((e) => e.id !== entry.id && e.data.category === entry.data.category && e.data.country !== entry.data.country)
   .slice(0, 3);
 
-const publishedAt = getPublishedDates().get(`src/content/etiquette/${entry.id}.mdx`);
 const updatedAtISO = entry.data.updatedAt?.toISOString();
+const publishedAtISO = entry.data.publishedAt?.toISOString() ?? updatedAtISO;
 
 const pageURL = new URL(Astro.url.pathname, Astro.site);
 const jsonLd = {
@@ -37,15 +37,20 @@ const jsonLd = {
   '@graph': [
     {
       '@type': 'Article',
+      '@id': `${pageURL}#article`,
       headline: entry.data.title,
       description: entry.data.summary,
       articleSection: meta.label,
-      about: entry.data.country,
-      datePublished: publishedAt ?? updatedAtISO,
-      dateModified: updatedAtISO ?? publishedAt,
+      about: { '@type': 'Country', name: countryLabel },
+      datePublished: publishedAtISO,
+      dateModified: updatedAtISO ?? publishedAtISO,
       image: new URL(`/og/${entry.id}.png`, Astro.site).toString(),
       url: pageURL,
-      isPartOf: { '@type': 'WebSite', name: 'Etiquetteness', url: Astro.site },
+      license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+      mainEntityOfPage: { '@type': 'WebPage', '@id': pageURL.toString() },
+      isPartOf: { '@id': WEBSITE_ID },
+      publisher: { '@id': ORGANIZATION_ID },
+      author: { '@id': ORGANIZATION_ID },
     },
     {
       '@type': 'BreadcrumbList',

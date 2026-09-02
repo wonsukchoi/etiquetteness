@@ -4,6 +4,7 @@ import EntryCard from '../../components/EntryCard.astro';
 import CategoryPills from '../../components/CategoryPills.astro';
 import CountryPills from '../../components/CountryPills.astro';
 import { COUNTRY_META, type Country } from '../../lib/countries';
+import { WEBSITE_ID } from '../../lib/organization';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -20,9 +21,42 @@ const { entries } = Astro.props;
 const countryLabel = COUNTRY_META[country as Country]?.label ?? country.replace(/-/g, ' ');
 const description =
   COUNTRY_META[country as Country]?.description ?? `Etiquette rules for ${countryLabel}.`;
+
+const pageURL = new URL(Astro.url.pathname, Astro.site);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${pageURL}#webpage`,
+      url: pageURL,
+      name: `Etiquette in ${countryLabel}`,
+      description,
+      isPartOf: { '@id': WEBSITE_ID },
+      about: { '@type': 'Country', name: countryLabel },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: String(Astro.site) },
+        { '@type': 'ListItem', position: 2, name: countryLabel, item: pageURL.toString() },
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      itemListElement: entries.map((entry, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: new URL(`/etiquette/${entry.id}/`, Astro.site).toString(),
+      })),
+    },
+  ],
+};
 ---
 
 <Layout title={`Etiquette in ${countryLabel}`} description={description}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
   <h1 class="font-display text-5xl font-semibold capitalize">{countryLabel}</h1>
   <p class="mt-4 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>
   <p class="mt-2 text-sm text-stone-500">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>

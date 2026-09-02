@@ -6,6 +6,7 @@ import CategoryPills from '../components/CategoryPills.astro';
 import CountryPills from '../components/CountryPills.astro';
 import heroImage from '../assets/hero-brunch-table.jpg';
 import { getCollection } from 'astro:content';
+import { organizationNode, websiteNode } from '../lib/organization';
 
 const entries = (await getCollection('etiquette')).sort((a, b) =>
   a.data.title.localeCompare(b.data.title)
@@ -16,10 +17,7 @@ const description =
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Etiquetteness',
-  description,
-  url: Astro.site,
+  '@graph': [websiteNode(Astro.site!, description), organizationNode(Astro.site!)],
 };
 ---
 
