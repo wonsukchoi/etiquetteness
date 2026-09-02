@@ -60,6 +60,7 @@ const { lastmodByPath, siteLastmod } = readEtiquetteLastmods();
 // https://astro.build/config
 export default defineConfig({
   site: 'https://etiquetteness.com',
+  trailingSlash: 'always',
 
   vite: {
     plugins: [tailwindcss()]

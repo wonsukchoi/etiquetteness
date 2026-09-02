@@ -2,7 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import { CATEGORY_META } from '../../lib/categories';
+import { COUNTRY_META, type Country } from '../../lib/countries';
+import { getPublishedDates } from '../../lib/publishedDates';
 import { getCollection, render } from 'astro:content';
+import { FiChevronRight, FiAlertTriangle, FiInfo, FiClock } from 'react-icons/fi';
 
 export async function getStaticPaths() {
   const entries = await getCollection('etiquette');
@@ -15,10 +18,18 @@ export async function getStaticPaths() {
 const { entry, entries } = Astro.props;
 const { Content } = await render(entry);
 const meta = CATEGORY_META[entry.data.category];
+const countryLabel = COUNTRY_META[entry.data.country as Country]?.label ?? entry.data.country.replace(/-/g, ' ');
 
-const related = entries
+const relatedByCountry = entries
   .filter((e) => e.id !== entry.id && e.data.country === entry.data.country)
   .slice(0, 3);
+
+const relatedByCategory = entries
+  .filter((e) => e.id !== entry.id && e.data.category === entry.data.category && e.data.country !== entry.data.country)
+  .slice(0, 3);
+
+const publishedAt = getPublishedDates().get(`src/content/etiquette/${entry.id}.mdx`);
+const updatedAtISO = entry.data.updatedAt?.toISOString();
 
 const pageURL = new URL(Astro.url.pathname, Astro.site);
 const jsonLd = {
@@ -30,7 +41,8 @@ const jsonLd = {
       description: entry.data.summary,
       articleSection: meta.label,
       about: entry.data.country,
-      dateModified: entry.data.updatedAt?.toISOString(),
+      datePublished: publishedAt ?? updatedAtISO,
+      dateModified: updatedAtISO ?? publishedAt,
       url: pageURL,
       isPartOf: { '@type': 'WebSite', name: 'Etiquetteness', url: Astro.site },
     },
@@ -41,8 +53,8 @@ const jsonLd = {
         {
           '@type': 'ListItem',
           position: 2,
-          name: entry.data.country,
-          item: new URL(`/country/${entry.data.country}`, Astro.site).toString(),
+          name: countryLabel,
+          item: new URL(`/country/${entry.data.country}/`, Astro.site).toString(),
         },
         { '@type': 'ListItem', position: 3, name: entry.data.title, item: pageURL.toString() },
       ],
@@ -55,9 +67,17 @@ const jsonLd = {
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <div>
-    <p class="flex items-center gap-2 text-sm font-medium uppercase tracking-widest text-stone-400">
+    <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-xs text-stone-400">
+      <a href="/" class="hover:text-stone-600">Home</a>
+      <FiChevronRight aria-hidden="true" size={12} />
+      <a href={`/country/${entry.data.country}/`} class="hover:text-stone-600">{countryLabel}</a>
+      <FiChevronRight aria-hidden="true" size={12} />
+      <span class="truncate text-stone-500">{entry.data.title}</span>
+    </nav>
+
+    <p class="mt-4 flex items-center gap-2 text-sm font-medium uppercase tracking-widest text-stone-400">
       <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
-      {meta.label} · {entry.data.country}
+      {meta.label} · {countryLabel}
     </p>
 
     <h1 class="mt-3 font-display text-5xl font-semibold leading-tight">
@@ -66,22 +86,33 @@ const jsonLd = {
 
     <p class="mt-4 text-xl leading-relaxed text-stone-600">{entry.data.summary}</p>
 
-    <div class="mt-6 flex flex-wrap gap-2">
+    <div class="mt-6 flex flex-wrap items-center gap-2">
       <a
-        href={`/country/${entry.data.country}`}
-        class="rounded-full border border-stone-200 px-3 py-1 text-xs font-medium capitalize text-stone-600 hover:border-stone-400"
+        href={`/country/${entry.data.country}/`}
+        class="rounded-full border border-stone-200 px-3 py-1 text-xs font-medium text-stone-600 hover:border-stone-400"
       >
-        {entry.data.country}
+        {countryLabel}
       </a>
       <a
-        href={`/category/${entry.data.category}`}
-        class="rounded-full border border-stone-200 px-3 py-1 text-xs font-medium capitalize text-stone-600 hover:border-stone-400"
+        href={`/category/${entry.data.category}/`}
+        class="rounded-full border border-stone-200 px-3 py-1 text-xs font-medium text-stone-600 hover:border-stone-400"
       >
-        {entry.data.category}
+        {meta.label}
       </a>
-      <span class="rounded-full border border-stone-200 px-3 py-1 text-xs font-medium capitalize text-stone-600">
+      <span class="flex items-center gap-1 rounded-full border border-stone-200 px-3 py-1 text-xs font-medium capitalize text-stone-600">
+        {entry.data.severity === 'strict' ? (
+          <FiAlertTriangle aria-hidden="true" size={12} />
+        ) : (
+          <FiInfo aria-hidden="true" size={12} />
+        )}
         {entry.data.severity}
       </span>
+      {entry.data.updatedAt && (
+        <span class="flex items-center gap-1 text-xs text-stone-400">
+          <FiClock aria-hidden="true" size={12} />
+          Updated {entry.data.updatedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        </span>
+      )}
     </div>
 
     <article class="prose prose-stone mt-10 max-w-none prose-p:leading-relaxed">
@@ -109,13 +140,30 @@ const jsonLd = {
     )}
   </div>
 
-  {related.length > 0 && (
+  {relatedByCountry.length > 0 && (
     <div class="mt-16 border-t border-stone-200 pt-10" data-pagefind-ignore>
-      <h2 class="font-display text-2xl font-semibold capitalize">More from {entry.data.country}</h2>
+      <h2 class="font-display text-2xl font-semibold">More from {countryLabel}</h2>
       <div class="entry-list mt-6 divide-y divide-stone-200">
-        {related.map((r) => (
+        {relatedByCountry.map((r) => (
           <EntryCard
-            href={`/etiquette/${r.id}`}
+            href={`/etiquette/${r.id}/`}
+            title={r.data.title}
+            country={r.data.country}
+            category={r.data.category}
+            summary={r.data.summary}
+          />
+        ))}
+      </div>
+    </div>
+  )}
+
+  {relatedByCategory.length > 0 && (
+    <div class="mt-16 border-t border-stone-200 pt-10" data-pagefind-ignore>
+      <h2 class="font-display text-2xl font-semibold">More {meta.label} rules</h2>
+      <div class="entry-list mt-6 divide-y divide-stone-200">
+        {relatedByCategory.map((r) => (
+          <EntryCard
+            href={`/etiquette/${r.id}/`}
             title={r.data.title}
             country={r.data.country}
             category={r.data.category}

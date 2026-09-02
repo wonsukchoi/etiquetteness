@@ -47,7 +47,7 @@ const allActive = 'border-stone-900 text-stone-900';
         const activeStyle = `border-color: ${CATEGORY_META[category].color}`;
         return (
           <a
-            href={`/category/${category}`}
+            href={`/category/${category}/`}
             aria-current={isActive ? 'true' : undefined}
             data-filter-key={filterable ? 'category' : undefined}
             data-filter-value={filterable ? category : undefined}

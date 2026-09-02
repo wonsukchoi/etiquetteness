@@ -57,7 +57,7 @@ const activeCount = 'pill-count text-stone-300';
         const isActive = active === country;
         return (
           <a
-            href={`/country/${country}`}
+            href={`/country/${country}/`}
             aria-current={isActive ? 'true' : undefined}
             data-filter-key={filterable ? 'country' : undefined}
             data-filter-value={filterable ? country : undefined}
@@ -81,7 +81,7 @@ const activeCount = 'pill-count text-stone-300';
         const isActive = active === country;
         return (
           <a
-            href={`/country/${country}`}
+            href={`/country/${country}/`}
             aria-current={isActive ? 'true' : undefined}
             data-filter-key={filterable ? 'country' : undefined}
             data-filter-value={filterable ? country : undefined}
