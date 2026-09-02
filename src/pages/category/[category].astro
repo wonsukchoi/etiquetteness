@@ -19,12 +19,13 @@ const { entries } = Astro.props;
 const meta = CATEGORY_META[category];
 ---
 
-<Layout title={`${meta.label} etiquette`}>
+<Layout title={`${meta.label} etiquette`} description={meta.description}>
   <div class="flex items-center gap-3">
     <span class="h-3 w-3 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
     <h1 class="font-display text-5xl font-semibold">{meta.label}</h1>
   </div>
-  <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
+  <p class="mt-4 max-w-2xl text-lg leading-relaxed text-stone-600">{meta.description}</p>
+  <p class="mt-2 text-sm text-stone-500">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
 
   <div class="mt-8 space-y-4">
     <CategoryPills active={category} />

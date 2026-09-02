@@ -18,11 +18,14 @@ export async function getStaticPaths() {
 const { country } = Astro.params as { country: string };
 const { entries } = Astro.props;
 const countryLabel = COUNTRY_META[country as Country]?.label ?? country.replace(/-/g, ' ');
+const description =
+  COUNTRY_META[country as Country]?.description ?? `Etiquette rules for ${countryLabel}.`;
 ---
 
-<Layout title={`Etiquette in ${countryLabel}`}>
+<Layout title={`Etiquette in ${countryLabel}`} description={description}>
   <h1 class="font-display text-5xl font-semibold capitalize">{countryLabel}</h1>
-  <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
+  <p class="mt-4 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>
+  <p class="mt-2 text-sm text-stone-500">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
 
   <div class="mt-8 space-y-4">
     <CategoryPills />
