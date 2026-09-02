@@ -36,6 +36,7 @@ function readEtiquetteLastmods() {
 
   const dated = entries.map((e) => e.updatedAt).filter(Boolean).sort();
   const siteLastmod = dated.at(-1) ?? new Date().toISOString();
+  /** @param {{ updatedAt?: string }[]} matches */
   const latestOf = (matches) => matches.map((e) => e.updatedAt).filter(Boolean).sort().at(-1) ?? siteLastmod;
 
   const lastmodByPath = new Map();
