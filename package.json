@@ -7,8 +7,9 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "tsx scripts/generate-og-images.ts && astro build && pagefind --site dist",
+    "build": "tsx scripts/generate-og-images.ts && tsx scripts/generate-llms-txt.ts && astro build && pagefind --site dist",
     "og-images": "tsx scripts/generate-og-images.ts",
+    "llms-txt": "tsx scripts/generate-llms-txt.ts",
     "preview": "astro preview",
     "astro": "astro"
   },

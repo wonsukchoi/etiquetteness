@@ -13,7 +13,7 @@ const etiquette = defineCollection({
     source: z.string().optional(),
     sourceUrl: z.string().url().optional(),
     publishedAt: z.coerce.date().optional(), // real first-added date, backfilled from git history
-    updatedAt: z.coerce.date().optional(),
+    updatedAt: z.coerce.date().optional(), // only bump when THIS entry's content actually changes — not on unrelated commits, or dateModified/sitemap lastmod stop meaning anything
   }),
 });
 
