@@ -17,7 +17,7 @@ const { entries } = Astro.props;
 ---
 
 <Layout title={`Etiquette in ${country}`}>
-  <h1 class="font-serif text-4xl font-medium capitalize tracking-tight">{country}</h1>
+  <h1 class="font-display text-5xl font-semibold capitalize">{country}</h1>
   <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
 
   <div class="mt-8 divide-y divide-stone-200" data-pagefind-ignore>

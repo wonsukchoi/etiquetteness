@@ -11,6 +11,7 @@ const etiquette = defineCollection({
     summary: z.string(), // one-sentence rule, shown in listings
     context: z.string().optional(), // why the rule exists
     source: z.string().optional(),
+    sourceUrl: z.string().url().optional(),
     updatedAt: z.coerce.date().optional(),
   }),
 });
