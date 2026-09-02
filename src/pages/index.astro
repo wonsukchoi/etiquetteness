@@ -1,8 +1,10 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import EntryCard from '../components/EntryCard.astro';
 import CategoryPills from '../components/CategoryPills.astro';
 import CountryPills from '../components/CountryPills.astro';
+import heroImage from '../assets/hero-brunch-table.jpg';
 import { getCollection } from 'astro:content';
 
 const entries = (await getCollection('etiquette')).sort((a, b) =>
@@ -24,14 +26,31 @@ const jsonLd = {
 <Layout title="Etiquetteness" description={description}>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
-  <div class="max-w-2xl">
-    <h1 class="font-display text-5xl font-semibold sm:text-6xl">
-      The etiquette nobody writes down.
-    </h1>
-    <p class="mt-4 text-lg text-stone-600">
-      Rice on the left, soup on the right. No smoking on a plane. The unspoken
-      rules people expect you to already know: by country, by situation.
-    </p>
+  <div class="grid items-center gap-10 sm:grid-cols-[1.1fr_1fr] sm:gap-12">
+    <div>
+      <h1 class="font-display text-5xl font-semibold sm:text-6xl">
+        The etiquette nobody writes down.
+      </h1>
+      <p class="mt-4 text-lg text-stone-600">
+        Rice on the left, soup on the right. No smoking on a plane. The unspoken
+        rules people expect you to already know: by country, by situation.
+      </p>
+    </div>
+    <div class="overflow-hidden rounded-xl" style="aspect-ratio: 4/3;">
+      <Image
+        src={heroImage}
+        alt="Overhead view of a shared brunch table — waffles, eggs, coffee, and a hand reaching in for food"
+        width={1200}
+        height={800}
+        widths={[400, 600, 900, 1200]}
+        sizes="(min-width: 640px) 480px, 100vw"
+        format="webp"
+        quality="mid"
+        loading="eager"
+        fetchpriority="high"
+        class="h-full w-full object-cover"
+      />
+    </div>
   </div>
 
   <div class="mt-14 space-y-4" data-filters>
