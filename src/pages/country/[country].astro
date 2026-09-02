@@ -1,6 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
+import CategoryPills from '../../components/CategoryPills.astro';
+import CountryPills from '../../components/CountryPills.astro';
+import { COUNTRY_META, type Country } from '../../lib/countries';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -12,13 +15,19 @@ export async function getStaticPaths() {
   }));
 }
 
-const { country } = Astro.params;
+const { country } = Astro.params as { country: string };
 const { entries } = Astro.props;
+const countryLabel = COUNTRY_META[country as Country]?.label ?? country.replace(/-/g, ' ');
 ---
 
-<Layout title={`Etiquette in ${country}`}>
-  <h1 class="font-display text-5xl font-semibold capitalize">{country}</h1>
+<Layout title={`Etiquette in ${countryLabel}`}>
+  <h1 class="font-display text-5xl font-semibold capitalize">{countryLabel}</h1>
   <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
+
+  <div class="mt-8 space-y-4">
+    <CategoryPills />
+    <CountryPills active={country} />
+  </div>
 
   <div class="entry-list mt-8 divide-y divide-stone-200" data-pagefind-ignore>
     {

@@ -4,9 +4,12 @@ import { CATEGORIES, CATEGORY_META } from '../lib/categories';
 
 interface Props {
   active?: string;
+  // Homepage mode: pills carry data-filter-* hooks for the client-side
+  // combined category+country filter instead of navigating to /category/x.
+  filterable?: boolean;
 }
 
-const { active } = Astro.props;
+const { active, filterable = false } = Astro.props;
 
 const entries = await getCollection('etiquette');
 const counts = Object.fromEntries(
@@ -17,6 +20,8 @@ const counts = Object.fromEntries(
 <nav class="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-stone-200 text-sm" aria-label="Filter by category">
   <a
     href="/"
+    data-filter-key={filterable ? 'category' : undefined}
+    data-filter-value={filterable ? '' : undefined}
     class:list={[
       'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
       !active
@@ -30,6 +35,8 @@ const counts = Object.fromEntries(
     CATEGORIES.map((category) => (
       <a
         href={`/category/${category}`}
+        data-filter-key={filterable ? 'category' : undefined}
+        data-filter-value={filterable ? category : undefined}
         class:list={[
           'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
           active === category

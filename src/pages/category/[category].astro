@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import CategoryPills from '../../components/CategoryPills.astro';
+import CountryPills from '../../components/CountryPills.astro';
 import { CATEGORIES, CATEGORY_META, type Category } from '../../lib/categories';
 import { getCollection } from 'astro:content';
 
@@ -25,8 +26,9 @@ const meta = CATEGORY_META[category];
   </div>
   <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
 
-  <div class="mt-8">
+  <div class="mt-8 space-y-4">
     <CategoryPills active={category} />
+    <CountryPills />
   </div>
 
   {entries.length > 0 ? (

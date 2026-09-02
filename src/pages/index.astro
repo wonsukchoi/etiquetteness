@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import EntryCard from '../components/EntryCard.astro';
 import CategoryPills from '../components/CategoryPills.astro';
+import CountryPills from '../components/CountryPills.astro';
 import { getCollection } from 'astro:content';
 
 const entries = (await getCollection('etiquette')).sort((a, b) =>
@@ -33,11 +34,14 @@ const jsonLd = {
     </p>
   </div>
 
-  <div class="mt-14">
-    <CategoryPills />
+  <div class="mt-14 space-y-4" data-filters>
+    <CategoryPills filterable />
+    <CountryPills filterable />
   </div>
 
-  <div class="entry-list mt-8 divide-y divide-stone-200" data-pagefind-ignore>
+  <p class="mt-6 text-sm text-stone-500" data-result-count>{entries.length} rules</p>
+
+  <div class="entry-list mt-2 divide-y divide-stone-200" data-entry-list data-pagefind-ignore>
     {
       entries.map((entry) => (
         <EntryCard
@@ -50,4 +54,68 @@ const jsonLd = {
       ))
     }
   </div>
+
+  <p class="mt-8 hidden text-center text-stone-500" data-empty-state>
+    No rules match both filters yet — try clearing one.
+  </p>
+
+  <script>
+    (function () {
+      const filtersEl = document.querySelector<HTMLElement>('[data-filters]');
+      const list = document.querySelector<HTMLElement>('[data-entry-list]');
+      const countEl = document.querySelector<HTMLElement>('[data-result-count]');
+      const emptyEl = document.querySelector<HTMLElement>('[data-empty-state]');
+      if (!filtersEl || !list) return;
+
+      const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-entry-row]'));
+      const params = new URLSearchParams(location.search);
+
+      function render() {
+        const category = params.get('category') ?? '';
+        const country = params.get('country') ?? '';
+
+        let visible = 0;
+        for (const row of rows) {
+          const matches =
+            (!category || row.dataset.category === category) &&
+            (!country || row.dataset.country === country);
+          row.style.display = matches ? '' : 'none';
+          if (matches) visible += 1;
+        }
+
+        if (countEl) countEl.textContent = `${visible} rule${visible === 1 ? '' : 's'}`;
+        if (emptyEl) emptyEl.classList.toggle('hidden', visible !== 0);
+
+        for (const pill of filtersEl!.querySelectorAll<HTMLAnchorElement>('a[data-filter-key]')) {
+          const key = pill.dataset.filterKey!;
+          const value = pill.dataset.filterValue ?? '';
+          const isActive = (params.get(key) ?? '') === value;
+          pill.classList.toggle('is-active', isActive);
+
+          const next = new URLSearchParams(params);
+          if (value) next.set(key, value);
+          else next.delete(key);
+          const qs = next.toString();
+          pill.href = qs ? `/?${qs}` : '/';
+        }
+      }
+
+      filtersEl.addEventListener('click', (event) => {
+        const pill = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[data-filter-key]');
+        if (!pill) return;
+        event.preventDefault();
+
+        const key = pill.dataset.filterKey!;
+        const value = pill.dataset.filterValue ?? '';
+        if (value) params.set(key, value);
+        else params.delete(key);
+
+        const qs = params.toString();
+        history.pushState({}, '', qs ? `/?${qs}` : '/');
+        render();
+      });
+
+      render();
+    })();
+  </script>
 </Layout>
