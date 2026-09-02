@@ -7,17 +7,19 @@ interface Props {
   title: string;
   description?: string;
   type?: 'website' | 'article';
+  image?: string;
 }
 
 const {
   title,
   description = 'Unwritten etiquette rules from around the world.',
   type = 'website',
+  image = '/og-image.jpg',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness`;
-const ogImageURL = new URL('/og-image.jpg', Astro.site);
+const ogImageURL = new URL(image, Astro.site);
 ---
 
 <!doctype html>
