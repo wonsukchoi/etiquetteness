@@ -1,0 +1,50 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EntryCard from '../../components/EntryCard.astro';
+import CategoryPills from '../../components/CategoryPills.astro';
+import { CATEGORIES, CATEGORY_META, type Category } from '../../lib/categories';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('etiquette');
+  return CATEGORIES.map((category) => ({
+    params: { category },
+    props: { entries: entries.filter((e) => e.data.category === category) },
+  }));
+}
+
+const { category } = Astro.params as { category: Category };
+const { entries } = Astro.props;
+const meta = CATEGORY_META[category];
+---
+
+<Layout title={`${meta.label} etiquette`}>
+  <h1 class="font-serif text-4xl font-medium tracking-tight">
+    {meta.emoji} {meta.label}
+  </h1>
+  <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
+
+  <div class="mt-8">
+    <CategoryPills active={category} />
+  </div>
+
+  {entries.length > 0 ? (
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        entries.map((entry) => (
+          <EntryCard
+            href={`/etiquette/${entry.id}`}
+            title={entry.data.title}
+            country={entry.data.country}
+            category={entry.data.category}
+            summary={entry.data.summary}
+          />
+        ))
+      }
+    </div>
+  ) : (
+    <div class="mt-8 rounded-xl border border-dashed border-stone-300 p-10 text-center text-stone-500">
+      <p>No {meta.label.toLowerCase()} rules yet — check back soon.</p>
+    </div>
+  )}
+</Layout>

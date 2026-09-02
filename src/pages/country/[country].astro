@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EntryCard from '../../components/EntryCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('etiquette');
+  const countries = [...new Set(entries.map((e) => e.data.country))];
+  return countries.map((country) => ({
+    params: { country },
+    props: { entries: entries.filter((e) => e.data.country === country) },
+  }));
+}
+
+const { country } = Astro.params;
+const { entries } = Astro.props;
+---
+
+<Layout title={`Etiquette in ${country}`}>
+  <h1 class="font-serif text-4xl font-medium capitalize tracking-tight">{country}</h1>
+  <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
+
+  <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      entries.map((entry) => (
+        <EntryCard
+          href={`/etiquette/${entry.id}`}
+          title={entry.data.title}
+          country={entry.data.country}
+          category={entry.data.category}
+          summary={entry.data.summary}
+        />
+      ))
+    }
+  </div>
+</Layout>

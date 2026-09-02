@@ -1,0 +1,30 @@
+---
+import { CATEGORY_META, type Category } from '../lib/categories';
+
+interface Props {
+  href: string;
+  title: string;
+  country: string;
+  category: Category;
+  summary: string;
+}
+
+const { href, title, country, category, summary } = Astro.props;
+const meta = CATEGORY_META[category];
+---
+
+<a
+  href={href}
+  class="group block rounded-xl border border-stone-200 bg-white p-5 transition-colors duration-200 hover:border-stone-400"
+>
+  <div class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-stone-400">
+    <span aria-hidden="true">{meta.emoji}</span>
+    <span>{country}</span>
+    <span aria-hidden="true">·</span>
+    <span>{meta.label}</span>
+  </div>
+  <h3 class="mt-2 font-serif text-lg font-medium leading-snug text-stone-900 group-hover:text-stone-600">
+    {title}
+  </h3>
+  <p class="mt-1.5 text-sm text-stone-600">{summary}</p>
+</a>

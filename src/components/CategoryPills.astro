@@ -1,0 +1,38 @@
+---
+import { CATEGORIES, CATEGORY_META } from '../lib/categories';
+
+interface Props {
+  active?: string;
+}
+
+const { active } = Astro.props;
+---
+
+<div class="flex flex-wrap gap-2">
+  <a
+    href="/"
+    class:list={[
+      'flex min-h-11 items-center rounded-full border px-4 text-sm font-medium transition-colors',
+      !active
+        ? 'border-stone-900 bg-stone-900 text-white'
+        : 'border-stone-200 text-stone-600 hover:border-stone-400',
+    ]}
+  >
+    All
+  </a>
+  {
+    CATEGORIES.map((category) => (
+      <a
+        href={`/category/${category}`}
+        class:list={[
+          'flex min-h-11 items-center rounded-full border px-4 text-sm font-medium transition-colors',
+          active === category
+            ? 'border-stone-900 bg-stone-900 text-white'
+            : 'border-stone-200 text-stone-600 hover:border-stone-400',
+        ]}
+      >
+        {CATEGORY_META[category].emoji} {CATEGORY_META[category].label}
+      </a>
+    ))
+  }
+</div>
