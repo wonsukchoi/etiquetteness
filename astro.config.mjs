@@ -9,6 +9,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
 
 // Reads each entry's `updatedAt` frontmatter directly from disk (rather than via
 // astro:content, which isn't available yet at config-eval time) so the sitemap can
@@ -71,6 +72,7 @@ export default defineConfig({
         return { ...item, lastmod };
       }
     }),
-    mdx()
+    mdx(),
+    react()
   ]
 });
