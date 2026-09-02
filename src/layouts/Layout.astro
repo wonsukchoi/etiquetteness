@@ -57,8 +57,7 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
         </a>
         <div class="flex items-center gap-5 text-sm text-stone-500">
           {Object.entries(CATEGORY_META).map(([slug, meta]) => (
-            <a href={`/category/${slug}`} class="flex items-center gap-1.5 hover:text-stone-900">
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
+            <a href={`/category/${slug}`} class="hover:text-stone-900">
               {meta.label}
             </a>
           ))}
