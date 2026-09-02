@@ -20,55 +20,57 @@ const counts = Object.fromEntries(
 // dropping it from the filter.
 const known = new Set<string>(COUNTRIES);
 const extraCountries = [...new Set(entries.map((e) => e.data.country))].filter((c) => !known.has(c));
+
+// Chips (filled pills), not tabs — deliberately different from CategoryPills'
+// underline style so two filter rows never read as one, even once this wraps
+// to multiple lines.
+const pill =
+  'country-pill flex min-h-9 items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition-colors';
+const resting = 'border-stone-200 text-stone-600 hover:border-stone-400 hover:text-stone-900';
+const activeChip = 'border-stone-900 bg-stone-900 text-white';
 ---
 
-<nav class="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-stone-200 text-sm" aria-label="Filter by country">
-  <a
-    href="/"
-    data-filter-key={filterable ? 'country' : undefined}
-    data-filter-value={filterable ? '' : undefined}
-    class:list={[
-      'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
-      !active
-        ? 'border-stone-900 text-stone-900'
-        : 'border-transparent text-stone-500 hover:text-stone-900',
-    ]}
-  >
-    All <span class="text-stone-400">{entries.length}</span>
-  </a>
-  {
-    COUNTRIES.filter((c) => counts[c] > 0).map((country) => (
-      <a
-        href={`/country/${country}`}
-        data-filter-key={filterable ? 'country' : undefined}
-        data-filter-value={filterable ? country : undefined}
-        class:list={[
-          'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
-          active === country
-            ? 'border-stone-900 text-stone-900'
-            : 'border-transparent text-stone-500 hover:text-stone-900',
-        ]}
-      >
-        <span aria-hidden="true">{COUNTRY_META[country].flag}</span>
-        {COUNTRY_META[country].label} <span class="text-stone-400">{counts[country]}</span>
-      </a>
-    ))
-  }
-  {
-    extraCountries.map((country) => (
-      <a
-        href={`/country/${country}`}
-        data-filter-key={filterable ? 'country' : undefined}
-        data-filter-value={filterable ? country : undefined}
-        class:list={[
-          'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium capitalize transition-colors',
-          active === country
-            ? 'border-stone-900 text-stone-900'
-            : 'border-transparent text-stone-500 hover:text-stone-900',
-        ]}
-      >
-        {country.replace(/-/g, ' ')}
-      </a>
-    ))
-  }
-</nav>
+<div>
+  <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-400">Country</p>
+  <nav class="flex flex-wrap items-center gap-2" aria-label="Filter by country">
+    <a
+      href="/"
+      data-filter-key={filterable ? 'country' : undefined}
+      data-filter-value={filterable ? '' : undefined}
+      data-resting-class={filterable ? resting : undefined}
+      data-active-class={filterable ? activeChip : undefined}
+      class:list={[pill, !active ? activeChip : resting]}
+    >
+      All <span class="pill-count text-stone-400">{entries.length}</span>
+    </a>
+    {
+      COUNTRIES.filter((c) => counts[c] > 0).map((country) => (
+        <a
+          href={`/country/${country}`}
+          data-filter-key={filterable ? 'country' : undefined}
+          data-filter-value={filterable ? country : undefined}
+          data-resting-class={filterable ? resting : undefined}
+          data-active-class={filterable ? activeChip : undefined}
+          class:list={[pill, active === country ? activeChip : resting]}
+        >
+          <span aria-hidden="true">{COUNTRY_META[country].flag}</span>
+          {COUNTRY_META[country].label} <span class="pill-count text-stone-400">{counts[country]}</span>
+        </a>
+      ))
+    }
+    {
+      extraCountries.map((country) => (
+        <a
+          href={`/country/${country}`}
+          data-filter-key={filterable ? 'country' : undefined}
+          data-filter-value={filterable ? country : undefined}
+          data-resting-class={filterable ? resting : undefined}
+          data-active-class={filterable ? activeChip : undefined}
+          class:list={[pill, 'capitalize', active === country ? activeChip : resting]}
+        >
+          {country.replace(/-/g, ' ')}
+        </a>
+      ))
+    }
+  </nav>
+</div>

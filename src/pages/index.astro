@@ -90,7 +90,12 @@ const jsonLd = {
           const key = pill.dataset.filterKey!;
           const value = pill.dataset.filterValue ?? '';
           const isActive = (params.get(key) ?? '') === value;
-          pill.classList.toggle('is-active', isActive);
+
+          const activeCls = (pill.dataset.activeClass ?? '').split(' ').filter(Boolean);
+          const restingCls = (pill.dataset.restingClass ?? '').split(' ').filter(Boolean);
+          pill.classList.remove(...activeCls, ...restingCls);
+          pill.classList.add(...(isActive ? activeCls : restingCls));
+          if (pill.dataset.activeStyle) pill.style.cssText = isActive ? pill.dataset.activeStyle : '';
 
           const next = new URLSearchParams(params);
           if (value) next.set(key, value);
