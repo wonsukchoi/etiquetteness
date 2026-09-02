@@ -26,3 +26,6 @@ pnpm-debug.log*
 # local tooling state
 .dual-graph/
 .claude/settings.local.json
+
+# wrangler local cache
+.wrangler/
