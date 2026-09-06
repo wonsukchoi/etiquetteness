@@ -1,4 +1,4 @@
-export const CATEGORIES = ['dining', 'business', 'social', 'travel', 'gifts', 'home'] as const;
+export const CATEGORIES = ['dining', 'business', 'social', 'travel', 'gifts', 'home', 'dating'] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 // Each category gets one fixed accent color, used sparingly (a small dot,
@@ -10,4 +10,5 @@ export const CATEGORY_META: Record<Category, { label: string; color: string }> =
   travel: { label: 'Travel', color: '#1F6F8B' },
   gifts: { label: 'Gifts', color: '#A8842C' },
   home: { label: 'Home', color: '#3F6B4B' },
+  dating: { label: 'Dating', color: '#8E4A9B' },
 };

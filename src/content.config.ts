@@ -6,7 +6,7 @@ const etiquette = defineCollection({
   schema: z.object({
     title: z.string(),
     country: z.string(), // "korea", "japan", "global", ...
-    category: z.enum(['dining', 'business', 'social', 'travel', 'gifts', 'home']),
+    category: z.enum(['dining', 'business', 'social', 'travel', 'gifts', 'home', 'dating']),
     severity: z.enum(['strict', 'casual']),
     summary: z.string(), // one-sentence rule, shown in listings
     context: z.string().optional(), // why the rule exists
