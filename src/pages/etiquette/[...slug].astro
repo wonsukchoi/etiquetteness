@@ -75,7 +75,7 @@ const jsonLd = {
   type="article"
   image={`/og/${entry.id}.png`}
 >
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <div>
     <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-xs text-stone-400">

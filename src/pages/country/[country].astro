@@ -55,7 +55,7 @@ const jsonLd = {
 ---
 
 <Layout title={`Etiquette in ${countryLabel}`} description={description}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <h1 class="font-display text-5xl font-semibold capitalize">{countryLabel}</h1>
   <p class="mt-4 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>

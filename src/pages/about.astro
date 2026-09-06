@@ -19,7 +19,7 @@ const jsonLd = {
 ---
 
 <Layout title="About" description={description}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <div class="max-w-2xl">
     <h1 class="font-display text-5xl font-semibold">About Etiquetteness</h1>

@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as yaml from 'js-yaml';
 import { CATEGORIES, CATEGORY_META, type Category } from '../src/lib/categories.ts';
-import { COUNTRIES, COUNTRY_META, type Country } from '../src/lib/countries.ts';
+import { COUNTRIES, COUNTRY_META } from '../src/lib/countries.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const contentDir = path.join(root, 'src/content/etiquette');

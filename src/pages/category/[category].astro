@@ -52,7 +52,7 @@ const jsonLd = {
 ---
 
 <Layout title={`${meta.label} etiquette`} description={meta.description}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <div class="flex items-center gap-3">
     <span class="h-3 w-3 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
     <h1 class="font-display text-5xl font-semibold">{meta.label}</h1>

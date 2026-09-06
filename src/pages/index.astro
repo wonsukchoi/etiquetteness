@@ -22,7 +22,7 @@ const jsonLd = {
 ---
 
 <Layout title="Etiquetteness" description={description}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <div class="grid items-center gap-10 sm:grid-cols-[1.1fr_1fr] sm:gap-12">
     <div>
