@@ -1,4 +1,4 @@
-export const CATEGORIES = ['dining', 'business', 'social', 'travel', 'gifts', 'home'] as const;
+export const CATEGORIES = ['dining', 'business', 'social', 'travel', 'gifts', 'home', 'dating'] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 // Each category gets one fixed accent color, used sparingly (a small dot,
@@ -39,5 +39,11 @@ export const CATEGORY_META: Record<Category, { label: string; color: string; des
     color: '#3F6B4B',
     description:
       "The unwritten rules of being a guest in someone's home: arriving, removing shoes, accepting food or tea, saying goodbye. Entries for this category are still being added.",
+  },
+  dating: {
+    label: 'Dating',
+    color: '#8E4A9B',
+    description:
+      "Who initiates, who pays, how affection is shown in public — dating norms vary more than almost any other category, and getting them wrong can read as either too forward or coldly indifferent. These entries cover the unspoken rules of courtship from country to country.",
   },
 };
