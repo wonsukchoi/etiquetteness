@@ -1,0 +1,98 @@
+---
+import { getCollection } from 'astro:content';
+import { COUNTRIES, COUNTRY_META } from '../lib/countries';
+
+interface Props {
+  active?: string;
+  // Homepage mode: pills carry data-filter-* hooks for the client-side
+  // combined category+country filter instead of navigating to /country/x.
+  filterable?: boolean;
+}
+
+const { active, filterable = false } = Astro.props;
+
+const entries = await getCollection('etiquette');
+const counts = Object.fromEntries(
+  COUNTRIES.map((c) => [c, entries.filter((e) => e.data.country === c).length])
+);
+// Entries can carry a country not in the COUNTRIES list (new content added
+// without updating lib/countries.ts) — surface it rather than silently
+// dropping it from the filter.
+const known = new Set<string>(COUNTRIES);
+const extraCountries = [...new Set(entries.map((e) => e.data.country))].filter((c) => !known.has(c));
+
+// Chips (filled pills), not tabs — deliberately different from CategoryPills'
+// underline style so two filter rows never read as one, even once this wraps
+// to multiple lines. min-h-11 matches the 44px touch-target minimum used by
+// CategoryPills' tabs.
+const pill =
+  'country-pill flex min-h-11 shrink-0 snap-start items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-medium transition-colors';
+const resting = 'border-stone-200 text-stone-600 hover:border-stone-400 hover:text-stone-900';
+const activeChip = 'border-stone-900 bg-stone-900 text-white';
+// stone-400 is 2.4:1 on the page background — fails WCAG AA (needs 4.5:1).
+// stone-500 (4.57:1) is the floor for resting text; on the dark active chip
+// stone-300 (11.74:1) keeps the count legibly de-emphasized instead.
+const restingCount = 'pill-count text-stone-500';
+const activeCount = 'pill-count text-stone-300';
+---
+
+<div>
+  <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500">Country</p>
+  <nav class="scrollbar-hide flex snap-x items-center gap-2 overflow-x-auto pb-1" aria-label="Filter by country">
+    <a
+      href="/"
+      aria-current={!active ? 'true' : undefined}
+      data-filter-key={filterable ? 'country' : undefined}
+      data-filter-value={filterable ? '' : undefined}
+      data-resting-class={filterable ? resting : undefined}
+      data-active-class={filterable ? activeChip : undefined}
+      data-count-resting-class={filterable ? restingCount : undefined}
+      data-count-active-class={filterable ? activeCount : undefined}
+      class:list={[pill, !active ? activeChip : resting]}
+    >
+      All <span class:list={[!active ? activeCount : restingCount]}>{entries.length}</span>
+    </a>
+    {
+      COUNTRIES.filter((c) => counts[c] > 0).map((country) => {
+        const isActive = active === country;
+        return (
+          <a
+            href={`/country/${country}/`}
+            aria-current={isActive ? 'true' : undefined}
+            data-filter-key={filterable ? 'country' : undefined}
+            data-filter-value={filterable ? country : undefined}
+            data-resting-class={filterable ? resting : undefined}
+            data-active-class={filterable ? activeChip : undefined}
+            data-count-resting-class={filterable ? restingCount : undefined}
+            data-count-active-class={filterable ? activeCount : undefined}
+            class:list={[pill, isActive ? activeChip : resting]}
+          >
+            <span class="font-semibold" aria-hidden="true">
+              {COUNTRY_META[country].code}
+            </span>
+            {COUNTRY_META[country].label}{' '}
+            <span class:list={[isActive ? activeCount : restingCount]}>{counts[country]}</span>
+          </a>
+        );
+      })
+    }
+    {
+      extraCountries.map((country) => {
+        const isActive = active === country;
+        return (
+          <a
+            href={`/country/${country}/`}
+            aria-current={isActive ? 'true' : undefined}
+            data-filter-key={filterable ? 'country' : undefined}
+            data-filter-value={filterable ? country : undefined}
+            data-resting-class={filterable ? resting : undefined}
+            data-active-class={filterable ? activeChip : undefined}
+            class:list={[pill, 'capitalize', isActive ? activeChip : resting]}
+          >
+            {country.replace(/-/g, ' ')}
+          </a>
+        );
+      })
+    }
+  </nav>
+</div>

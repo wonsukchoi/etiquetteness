@@ -12,6 +12,16 @@
   border-radius: 2px;
 }
 
+/* Horizontally-scrollable filter rows — swipeable on touch, no visible
+   scrollbar clutter, still keyboard/wheel scrollable. */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

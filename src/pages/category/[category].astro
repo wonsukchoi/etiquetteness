@@ -2,7 +2,9 @@
 import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import CategoryPills from '../../components/CategoryPills.astro';
+import CountryPills from '../../components/CountryPills.astro';
 import { CATEGORIES, CATEGORY_META, type Category } from '../../lib/categories';
+import { WEBSITE_ID } from '../../lib/organization';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -16,25 +18,61 @@ export async function getStaticPaths() {
 const { category } = Astro.params as { category: Category };
 const { entries } = Astro.props;
 const meta = CATEGORY_META[category];
+
+const pageURL = new URL(Astro.url.pathname, Astro.site);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'CollectionPage',
+      '@id': `${pageURL}#webpage`,
+      url: pageURL,
+      name: `${meta.label} etiquette`,
+      description: meta.description,
+      isPartOf: { '@id': WEBSITE_ID },
+      about: { '@type': 'Thing', name: `${meta.label} etiquette` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: String(Astro.site) },
+        { '@type': 'ListItem', position: 2, name: meta.label, item: pageURL.toString() },
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      itemListElement: entries.map((entry, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: new URL(`/etiquette/${entry.id}/`, Astro.site).toString(),
+      })),
+    },
+  ],
+};
 ---
 
-<Layout title={`${meta.label} etiquette`}>
+<Layout title={`${meta.label} etiquette`} description={meta.description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <div class="flex items-center gap-3">
     <span class="h-3 w-3 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
     <h1 class="font-display text-5xl font-semibold">{meta.label}</h1>
   </div>
-  <p class="mt-2 text-stone-600">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
+  <p class="mt-4 max-w-2xl text-lg leading-relaxed text-stone-600">{meta.description}</p>
+  <p class="mt-2 text-sm text-stone-500">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
 
-  <div class="mt-8">
+  <div class="mt-8 space-y-4">
     <CategoryPills active={category} />
+    <CountryPills />
   </div>
 
   {entries.length > 0 ? (
+    <>
+    <h2 class="sr-only">{meta.label} rules</h2>
     <div class="entry-list mt-8 divide-y divide-stone-200" data-pagefind-ignore>
       {
         entries.map((entry) => (
           <EntryCard
-            href={`/etiquette/${entry.id}`}
+            href={`/etiquette/${entry.id}/`}
             title={entry.data.title}
             country={entry.data.country}
             category={entry.data.category}
@@ -43,6 +81,7 @@ const meta = CATEGORY_META[category];
         ))
       }
     </div>
+    </>
   ) : (
     <div class="mt-8 rounded-xl border border-dashed border-stone-300 p-10 text-center text-stone-500">
       <p>No {meta.label.toLowerCase()} rules yet, check back soon.</p>

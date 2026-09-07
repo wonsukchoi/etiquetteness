@@ -4,47 +4,63 @@ import { CATEGORIES, CATEGORY_META } from '../lib/categories';
 
 interface Props {
   active?: string;
+  // Homepage mode: pills carry data-filter-* hooks for the client-side
+  // combined category+country filter instead of navigating to /category/x.
+  filterable?: boolean;
 }
 
-const { active } = Astro.props;
+const { active, filterable = false } = Astro.props;
 
 const entries = await getCollection('etiquette');
 const counts = Object.fromEntries(
   CATEGORIES.map((c) => [c, entries.filter((e) => e.data.category === c).length])
 );
+
+// Tabs (underline), not chips — deliberately different from CountryPills'
+// filled-pill style so the two filter rows never read as one group.
+const pill = 'flex min-h-11 shrink-0 snap-start items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors';
+const resting = 'border-transparent text-stone-500 hover:text-stone-900';
+const allActive = 'border-stone-900 text-stone-900';
 ---
 
-<nav class="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-stone-200 text-sm" aria-label="Filter by category">
-  <a
-    href="/"
-    class:list={[
-      'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
-      !active
-        ? 'border-stone-900 text-stone-900'
-        : 'border-transparent text-stone-500 hover:text-stone-900',
-    ]}
+<div>
+  <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-stone-500">Category</p>
+  <nav
+    class="scrollbar-hide flex snap-x items-center gap-x-6 overflow-x-auto border-b border-stone-200 text-sm"
+    aria-label="Filter by category"
   >
-    All <span class="text-stone-400">{entries.length}</span>
-  </a>
-  {
-    CATEGORIES.map((category) => (
-      <a
-        href={`/category/${category}`}
-        class:list={[
-          'flex min-h-11 items-center gap-1.5 border-b-2 pb-3 -mb-px font-medium transition-colors',
-          active === category
-            ? 'text-stone-900'
-            : 'border-transparent text-stone-500 hover:text-stone-900',
-        ]}
-        style={active === category ? `border-color: ${CATEGORY_META[category].color}` : undefined}
-      >
-        <span
-          class="h-1.5 w-1.5 shrink-0 rounded-full"
-          style={`background-color: ${CATEGORY_META[category].color}`}
-          aria-hidden="true"
-        />
-        {CATEGORY_META[category].label} <span class="text-stone-400">{counts[category]}</span>
-      </a>
-    ))
-  }
-</nav>
+    <a
+      href="/"
+      aria-current={!active ? 'true' : undefined}
+      data-filter-key={filterable ? 'category' : undefined}
+      data-filter-value={filterable ? '' : undefined}
+      data-resting-class={filterable ? resting : undefined}
+      data-active-class={filterable ? allActive : undefined}
+      class:list={[pill, !active ? allActive : resting]}
+    >
+      All <span class="text-stone-500">{entries.length}</span>
+    </a>
+    {
+      CATEGORIES.map((category) => {
+        const isActive = active === category;
+        const categoryActive = `text-stone-900`;
+        const activeStyle = `border-color: ${CATEGORY_META[category].color}`;
+        return (
+          <a
+            href={`/category/${category}/`}
+            aria-current={isActive ? 'true' : undefined}
+            data-filter-key={filterable ? 'category' : undefined}
+            data-filter-value={filterable ? category : undefined}
+            data-resting-class={filterable ? resting : undefined}
+            data-active-class={filterable ? categoryActive : undefined}
+            data-active-style={filterable ? activeStyle : undefined}
+            class:list={[pill, isActive ? categoryActive : resting]}
+            style={isActive ? activeStyle : undefined}
+          >
+            {CATEGORY_META[category].label} <span class="text-stone-500">{counts[category]}</span>
+          </a>
+        );
+      })
+    }
+  </nav>
+</div>

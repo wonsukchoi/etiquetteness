@@ -1,0 +1,211 @@
+{
+  "summary": {
+    "health_score": 67,
+    "business_type": "Editorial/reference site (programmatic country x category etiquette-rule database, Astro static on Cloudflare Workers)",
+    "top_findings": [
+      "datePublished is fabricated in production - all 84 pages show the identical timestamp, likely a shallow git clone in the Cloudflare Workers Builds pipeline",
+      "Site may not be indexed by Google at all - site:etiquetteness.com returns zero results, no technical blocker found",
+      "dateModified and sitemap lastmod are uniformly today's date across all 84-107 URLs, carrying zero differentiation signal",
+      "Schema gaps widened: author/publisher/Organization still absent, about field still an invalid bare string, and country + category hub pages (20 total) ship zero JSON-LD",
+      "Hub pages remain link directories, not synthesized guides - unresolved page-type mismatch for broad '[country] [category] etiquette' queries"
+    ],
+    "quick_wins": [
+      "Submit sitemap in Search Console and request indexing on 5-10 URLs - zero code change, addresses the indexation blocker",
+      "Add Organization + publisher/author schema site-wide, referenced from every Article - source content already exists in prose on /about/",
+      "Add long-lived immutable caching for /_astro/* and /og/* via public/_headers - recommended at baseline, still not live",
+      "Add /llms.txt indexing the 6 categories, 14 countries, and 84 entries",
+      "Investigate Cloudflare Workers Build git-clone depth to fix the datePublished bug, or fall back to a frontmatter publishedAt field"
+    ]
+  },
+  "categories": [
+    {
+      "name": "Technical SEO",
+      "score": 83,
+      "what_works": [
+        "Security headers (HSTS, CSP, X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy) all confirmed live",
+        "Internal-link trailing-slash redirect eliminated - trailingSlash: 'always' verified through canonicals, links, and breadcrumbs",
+        "robots.txt clean, sitemap valid and referenced, canonicals correct and self-referential everywhere, no noindex anywhere",
+        "Duplicate meta descriptions fixed - category/country pages now have unique, content-specific descriptions",
+        "Thin content substantially improved - unique body text grew from ~560 to ~2,200 characters on sampled articles",
+        "og:image/twitter:image live with real per-entry PNGs; twitter:card upgraded to summary_large_image",
+        "Sitemap now emits lastmod for all 107 URLs",
+        "Brotli compression, HTTP/3, self-referencing canonicals all confirmed healthy"
+      ],
+      "findings": [
+        {"title": "Site indexing status unconfirmed - site: query returns zero results", "severity": "Critical", "description": "No technical blocker found (robots.txt, meta robots, X-Robots-Tag, canonicals, sitemap all clean); a google-site-verification DNS TXT record confirms GSC ownership was verified at some point, but nothing indicates the sitemap was ever submitted.", "recommendation": "Submit sitemap-index.xml in Search Console, run URL Inspection + Request Indexing on 5-10 representative URLs, check the Page Indexing report for exclusion reasons."},
+        {"title": "datePublished fabricated in production - identical timestamp on every article", "severity": "Critical", "description": "src/lib/publishedDates.ts correctly derives a real per-file first-commit date via git log --diff-filter=A, but production returns the same value for every one of 84 sampled pages, matching the deployed HEAD commit exactly - strongly indicates a shallow git clone in Cloudflare Workers Builds.", "recommendation": "Deepen the Workers Builds git checkout (fetch-depth: 0 equivalent) or fall back to a frontmatter publishedAt field set once per entry."},
+        {"title": "Residual 307 redirect + 2-hop chain for non-canonical/external URLs", "severity": "High", "description": "No longer hit by internal navigation, but any external backlink, bookmark, or typed URL using the pre-fix format still pays a 307, or a 2-hop chain when combined with http://.", "recommendation": "Override with an explicit 301/308 Worker rule; collapse the http + non-slash case into a single hop."},
+        {"title": "Hashed static assets and OG images still not cached long-term", "severity": "High", "description": "/_astro/*.css, /pagefind/pagefind-ui.js, and now /og/*.png all served with max-age=0, must-revalidate despite content-hashed or effectively-immutable filenames.", "recommendation": "Add public/_headers rules: 31536000/immutable for /_astro/* and /pagefind/*, and a shorter revalidatable window for /og/*."},
+        {"title": "/search/ still thin and indexable", "severity": "Medium", "description": "Returns 200, listed in sitemap, but raw HTML has no real content - Pagefind results render client-side only. No noindex directive present.", "recommendation": "Add noindex,follow and drop from sitemap."},
+        {"title": "Article structured data still missing author", "severity": "Medium", "description": "image, datePublished, and dateModified are now present but author is absent from every sampled Article block.", "recommendation": "Add an Organization author (e.g. {\"@type\":\"Organization\",\"name\":\"Etiquetteness\"})."},
+        {"title": "CSP relies on 'unsafe-inline' for script-src", "severity": "Medium", "description": "Otherwise well-configured CSP includes 'unsafe-inline', weakening its core XSS-mitigation value - likely required for the inline Pagefind bootstrap script.", "recommendation": "Migrate to a nonce- or hash-based CSP entry for that one inline script."},
+        {"title": "Empty 404 page body", "severity": "Low", "description": "Returns 404 with content-length: 0 - security headers present but no HTML body, nav, or search box.", "recommendation": "Ship a real 404 page."},
+        {"title": "/contact/, /privacy/, /terms/ still 404", "severity": "Low", "description": "Not inherently an SEO defect, but the site is now a public repo under MIT/CC-BY-NC - a Privacy/Terms or attribution page is increasingly expected.", "recommendation": "Add minimal Contact and Privacy pages."},
+        {"title": "IndexNow protocol still not implemented", "severity": "Info", "description": "No IndexNow key file found.", "recommendation": "Cheap, optional add given the static build/deploy pipeline."}
+      ]
+    },
+    {
+      "name": "Content Quality",
+      "score": 57,
+      "what_works": [
+        "Substantive /about/ page (~280 words) states sourcing/verification methodology and a corrections path",
+        "Article body copy 3-4x longer (200-253 words vs 50-72) with exceptions, a 'watch out for' list, and a new 'Why it matters' section",
+        "Country and category hub pages now have real, unique editorial copy instead of ~0 words",
+        "Internal contextual linking expanded beyond same-country - new 'More [category] rules' cross-country block",
+        "Content grew from 58 to 84 entries, all 13 live countries now have 5+"
+      ],
+      "findings": [
+        {"title": "datePublished fix does not work in production", "severity": "Critical", "description": "Every article on the live site shows the identical datePublished timestamp despite the underlying git history being genuinely staggered per file - same root cause as the Technical finding.", "recommendation": "See Technical category fix."},
+        {"title": "dateModified/updatedAt uniformly today's date across all 84 entries", "severity": "High", "description": "Grepping updatedAt: across every .mdx file returns the same date for all 84 entries, including ones untouched in the recent content push - a rolling build date, not a genuine edit date.", "recommendation": "Only bump updatedAt on substantive content edits going forward, not on unrelated commits."},
+        {"title": "Single external source per entry, still secondary/blog-tier", "severity": "High", "description": "All sampled entries cite exactly one source each, consistently a travel-blog-tier citation rather than a primary/institutional source.", "recommendation": "Add a second corroborating source where feasible, or favor embassy/cultural-institute/academic sources."},
+        {"title": "No Contact, Privacy, or Terms pages", "severity": "Medium", "description": "All still 404. /about/ now covers most of the 'who/how to reach us' role a Contact page would, downgrading this from Critical.", "recommendation": "Add a standalone /contact/ and a minimal /privacy/ given the site loads third-party analytics."},
+        {"title": "No named individual author or credentials anywhere", "severity": "Medium", "description": "About page and footer point to a GitHub handle and email - real improvement over anonymity, but no stated name, background, or claimed expertise.", "recommendation": "Add a name/handle and a one-line credibility statement, visible on-site."},
+        {"title": "Severity tag (strict/casual) has no defined legend", "severity": "Low", "description": "No glossary, tooltip, or methodology text explaining the distinction anywhere, including the new About page.", "recommendation": "Add 1-2 sentences to the About page's 'How an entry gets made' section."}
+      ]
+    },
+    {
+      "name": "On-Page SEO",
+      "score": 74,
+      "what_works": [
+        "Meta descriptions now unique per category/country page (was site-wide duplicate)",
+        "Real heading structure per article: H1 rule statement, intro paragraph(s), Do/Don't list, H2 'Why it matters' section",
+        "BreadcrumbList present and correct on every article, now using canonical trailing-slash URLs",
+        "Internal linking expanded across both same-country and same-category axes"
+      ],
+      "findings": [
+        {"title": "Hub pages are link directories, not synthesized guides", "severity": "High", "description": "Country/category hub intros are now real 2-3 sentence editorial copy, but still hand off to a bare list of links rather than an inline synthesized answer - the core mismatch for broad head-term queries per the SXO pass.", "recommendation": "Add narrative synthesis between the entry list, or a new country x category intersection page."},
+        {"title": "No question-phrased headings", "severity": "Medium", "description": "The new 'Why it matters' section is a real improvement but is not phrased as a natural-language query, missing the highest-leverage remaining AI-citability change.", "recommendation": "Add or rename to a question-based H2 per entry."},
+        {"title": "Do/Don't list coverage inconsistent", "severity": "Low", "description": "Present on roughly 2/3 of sampled entries; the rest ship as list-free prose.", "recommendation": "Roll the pattern out to the remaining entries - template already proven."}
+      ]
+    },
+    {
+      "name": "Schema / Structured Data",
+      "score": 53,
+      "what_works": [
+        "image on Article fixed - real per-entry OG PNG verified live and correctly sized",
+        "datePublished/dateModified mechanism fixed (dateModified no longer computed at request time) - though datePublished's data is currently wrong in production, see Content/Technical",
+        "Breadcrumb name casing fixed - title-cased via COUNTRY_META instead of raw slug",
+        "/about/ ships valid AboutPage JSON-LD"
+      ],
+      "findings": [
+        {"title": "Country and category hub pages ship zero JSON-LD", "severity": "High", "description": "Confirmed live via curl on both /country/japan/ and /category/dining/ - zero application/ld+json blocks. Doubles the previously-scoped category-only gap to 20 pages total.", "recommendation": "Add CollectionPage + BreadcrumbList + ItemList to both hub templates."},
+        {"title": "about field still an invalid bare string on Article schema", "severity": "High", "description": "Live JSON-LD shows \"about\":\"japan\" - schema.org's about range is Thing, not Text. Same unresolved fix from baseline.", "recommendation": "Swap for { \"@type\": \"Country\", \"name\": countryLabel } - countryLabel already computed in the template."},
+        {"title": "author still missing on Article", "severity": "High", "description": "No author property, no byline anywhere in rendered HTML.", "recommendation": "Add an Organization author, referencing a new sitewide Organization entity."},
+        {"title": "No Organization or publisher entity anywhere", "severity": "Medium", "description": "No Organization exists to reference as publisher/author despite /about/ now containing exactly the needed prose (name, methodology, GitHub, contact).", "recommendation": "Add an Organization block once (e.g. on the homepage) and reference its @id from Article publisher/author and the About page's mainEntity."},
+        {"title": "Homepage WebSite block has no SearchAction", "severity": "Medium", "description": "No potentialAction despite a working /search/ page.", "recommendation": "Add a SearchAction pointing at /search?q={search_term_string}."},
+        {"title": "No license property reflecting the new CC BY-NC 4.0 status", "severity": "Low", "description": "Site went public with dual licensing (MIT code, CC BY-NC 4.0 content) but this isn't reflected in schema anywhere.", "recommendation": "Add a static license URL to the Article schema."},
+        {"title": "mainEntityOfPage and @id missing", "severity": "Low", "description": "Not added on Article or hub pages.", "recommendation": "Add once the Organization/publisher work lands."}
+      ]
+    },
+    {
+      "name": "Performance (proxy/lab)",
+      "score": 72,
+      "what_works": [
+        "Trailing-slash redirect on internal links resolved - no more double round-trip on internal navigation",
+        "Security headers verified to add no measurable overhead",
+        "Per-entry OG images confirmed zero-runtime-cost - pre-rendered at build time, served like any static asset",
+        "New homepage hero image well-implemented: responsive srcset, explicit width/height, fetchpriority=high",
+        "Brotli compression, HTTP/3, and TTFB all confirmed healthy (~450ms, directional only)"
+      ],
+      "findings": [
+        {"title": "Hashed assets and images still not sent with long-lived caching", "severity": "Medium", "description": "/_astro/*.css and the new hero image/OG image files all served with max-age=0, must-revalidate. Flagged at baseline, still unimplemented, now covers more surface area.", "recommendation": "Add a public/_headers rule for 31536000/immutable on /_astro/*."},
+        {"title": "Render-blocking Google Fonts stylesheet", "severity": "Medium", "description": "Synchronous font CSS load on every page, unchanged since baseline.", "recommendation": "Self-host the two variable woff2 files with preload."},
+        {"title": "pagefind-ui.js loads without defer", "severity": "Low", "description": "120KB script on /search with no defer/async attribute.", "recommendation": "Add defer."},
+        {"title": "Orphaned React client bundle in build output", "severity": "Info", "description": "@astrojs/react is installed and bundled but no page currently hydrates a React island - zero real-world cost today, but flagged as build hygiene.", "recommendation": "Confirm if planned scaffolding or prune the dependency."},
+        {"title": "No real CWV field/lab data available", "severity": "Info", "description": "No Lighthouse/PSI/CrUX access in this environment across two consecutive audits - all findings remain proxy estimates.", "recommendation": "Re-run with real tooling once available."}
+      ]
+    },
+    {
+      "name": "AI Search Readiness (GEO)",
+      "score": 61,
+      "what_works": [
+        "AI crawlers (GPTBot, PerplexityBot, ClaudeBot, CCBot, Google-Extended, etc.) all allowed via robots.txt, no blocking",
+        "Passage length grew substantially - core answer blocks now 77-163 words, near the citation-optimum range",
+        "New 'Why it matters' section on every sampled page gives a distinct, independently-citable second passage",
+        "Do/Don't lists now present on most sampled pages",
+        "/about/ gives AI systems something concrete to cite as methodology, and site is openly MIT/CC-BY-NC licensed"
+      ],
+      "findings": [
+        {"title": "Multi-modal content remains the weakest dimension", "severity": "High", "description": "Per-entry OG images exist but are never rendered inline with alt text - zero img/figure/video/table elements on any sampled article. Sitemap declares an image namespace but has zero image:image entries.", "recommendation": "Add image:image sitemap entries pointing at existing OG images (low effort); consider embedding illustrative in-body images with alt text."},
+        {"title": "No Organization/Person schema, despite the source content existing on /about/", "severity": "Medium", "description": "Homepage JSON-LD is still WebSite-only, Article schema has no publisher/author/sameAs - the single largest remaining authority gap, and low-effort given /about/ already has the needed prose.", "recommendation": "Add Organization schema and reference it as publisher/author sitewide."},
+        {"title": "llms.txt still missing", "severity": "Medium", "description": "404, unchanged from baseline - content is now even better suited to an llms.txt index given its consistent URL pattern and 84-entry scale.", "recommendation": "Add a static llms.txt listing the site summary, CC BY-NC 4.0 terms, and category/country links."},
+        {"title": "datePublished/dateModified/lastmod all still unreliable in production", "severity": "Medium", "description": "Same fabricated-freshness issue flagged by Technical/Content - undercuts an AI system's ability to cite 'as of' dates.", "recommendation": "See Technical category fix."},
+        {"title": "No question-based headings for query-mapping", "severity": "Low", "description": "'Why it matters' is real content but not phrased as a natural-language query an AI system can map directly onto.", "recommendation": "Add or rephrase toward question-based H2s."}
+      ]
+    },
+    {
+      "name": "Images",
+      "score": 35,
+      "what_works": [
+        "Per-entry OG images now exist and are real, correctly-sized 1200x630 PNGs (verified live, not placeholders)",
+        "Homepage hero image well-implemented with responsive srcset, explicit dimensions, and correct loading priority",
+        "OG image generation confirmed zero-runtime-cost - build-time satori+resvg, not computed per-request"
+      ],
+      "findings": [
+        {"title": "Zero in-body images across all 84 article pages", "severity": "High", "description": "OG images exist only as social-share/schema metadata, never rendered inline with alt text - flagged independently by Content, GEO, and SXO passes, despite the content type (bowing, cheek-kissing, hand placement) being inherently visual.", "recommendation": "Add at least one illustrative image per article with descriptive alt text; the existing OG generation pipeline could plausibly be adapted."},
+        {"title": "OG images not exposed via image sitemap", "severity": "Medium", "description": "Sitemap declares an xmlns:image namespace but has zero image:image entries across all 84 URLs.", "recommendation": "Add image:image entries pointing at existing OG image URLs - data already exists."},
+        {"title": "Category and article pages (excluding homepage) remain entirely text-only", "severity": "Medium", "description": "Only the homepage has an image; every category, country, article, and search page has zero img tags.", "recommendation": "Prioritize article-page images first given they're the primary Google/AI landing surface."}
+      ]
+    }
+  ],
+  "action_plan": {
+    "phases": [
+      {
+        "name": "Phase 1: Critical Fixes",
+        "timeframe": "Week 1",
+        "items": [
+          "Submit sitemap to Search Console and request indexing on 5-10 URLs",
+          "Fix datePublished - investigate Cloudflare Workers Build git-clone depth, or fall back to a frontmatter publishedAt field",
+          "Add Organization + publisher/author schema site-wide, referenced from every Article",
+          "Fix the about field type mismatch on Article schema (bare string to Country entity)",
+          "Add JSON-LD to country and category hub pages (CollectionPage + BreadcrumbList + ItemList)"
+        ]
+      },
+      {
+        "name": "Phase 2: High-Impact Improvements",
+        "timeframe": "Weeks 2-3",
+        "items": [
+          "Add long-lived immutable caching for /_astro/* and /og/* via public/_headers",
+          "Add /llms.txt indexing categories, countries, and entries",
+          "Stop overwriting updatedAt to today's date on every build - only bump on real edits",
+          "Build real guide-depth content at the hub layer (synthesized country x category guides)",
+          "Roll the Do/Don't list pattern out to remaining entries; add question-phrased H2s",
+          "Add image:image sitemap entries for existing OG images",
+          "Add Contact and Privacy pages"
+        ]
+      },
+      {
+        "name": "Phase 3: Content & Authority",
+        "timeframe": "Month 2",
+        "items": [
+          "Add at least one illustrative in-body image per article with alt text",
+          "Add a second corroborating source per entry where feasible",
+          "Put a name/handle and one-line credibility statement visible on-site",
+          "Add a legend for the strict/casual severity tag",
+          "Fix residual 307 redirect for non-canonical/external URLs (301/308)",
+          "De-index /search/ (noindex, drop from sitemap)",
+          "Run seo-programmatic skill on the country x category matrix at current scale",
+          "Re-run a scoped pass on Brazil/Vietnam once deployed"
+        ]
+      },
+      {
+        "name": "Phase 4: Monitoring & Iteration",
+        "timeframe": "Ongoing",
+        "items": [
+          "Ship a real 404 page body",
+          "Self-host Google Fonts with preload",
+          "Add defer to pagefind-ui.js",
+          "Add www DNS record + redirect to apex",
+          "Add IndexNow protocol",
+          "Re-run Performance and SXO with real Lighthouse/CrUX/PageSpeed and a full SERP sweep once available",
+          "Begin off-site brand-mention building",
+          "Decide on the orphaned React client bundle - keep or prune"
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "findings_dir": "findings/",
+    "screenshots_dir": "screenshots/"
+  }
+}

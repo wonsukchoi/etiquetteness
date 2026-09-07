@@ -1,21 +1,25 @@
 ---
 import '../styles/global.css';
 import { CATEGORY_META } from '../lib/categories';
+import { FiSearch, FiGithub, FiMail, FiMenu, FiX } from 'react-icons/fi';
 
 interface Props {
   title: string;
   description?: string;
   type?: 'website' | 'article';
+  image?: string;
 }
 
 const {
   title,
   description = 'Unwritten etiquette rules from around the world.',
   type = 'website',
+  image = '/og-image.jpg',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness`;
+const ogImageURL = new URL(image, Astro.site);
 ---
 
 <!doctype html>
@@ -28,16 +32,22 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" type="application/rss+xml" title="Etiquetteness" href="/rss.xml" />
 
     <meta property="og:type" content={type} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="Etiquetteness" />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Etiquetteness — the etiquette nobody writes down" />
 
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,29 +55,78 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <script defer src="https://analytics.wonsukchoi.com/script.js" data-website-id="ed6491aa-d209-466a-9124-919d90023a0b"></script>
+    <script is:inline defer src="https://analytics.wonsukchoi.com/script.js" data-website-id="ed6491aa-d209-466a-9124-919d90023a0b"></script>
     <slot name="head" />
   </head>
   <body class="min-h-screen bg-[#fbf9f6] text-stone-900">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+    >
+      Skip to main content
+    </a>
     <header class="bg-[#fbf9f6]/90 backdrop-blur">
       <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <a href="/" class="leading-tight">
           <span class="block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Culture &amp; Custom</span>
           <span class="font-display text-xl font-semibold">Etiquetteness</span>
         </a>
-        <div class="flex items-center gap-5 text-sm text-stone-500">
+
+        <div class="hidden items-center gap-5 text-sm text-stone-500 lg:flex">
           {Object.entries(CATEGORY_META).map(([slug, meta]) => (
-            <a href={`/category/${slug}`} class="hover:text-stone-900">
+            <a href={`/category/${slug}/`} class="hover:text-stone-900">
               {meta.label}
             </a>
           ))}
-          <a href="/search" class="flex min-h-11 items-center font-medium text-stone-900" aria-label="Search">
+          <a href="/search/" class="flex min-h-11 items-center gap-1.5 font-medium text-stone-900" aria-label="Search">
+            <FiSearch aria-hidden="true" size={15} />
             Search
           </a>
         </div>
+
+        <button
+          id="mobile-menu-toggle"
+          type="button"
+          class="flex h-11 w-11 items-center justify-center text-stone-700 lg:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Open menu"
+        >
+          <FiMenu id="mobile-menu-icon-open" aria-hidden="true" size={22} />
+          <FiX id="mobile-menu-icon-close" aria-hidden="true" size={22} className="hidden" />
+        </button>
       </nav>
+
+      <div id="mobile-menu" class="hidden border-t border-stone-200 px-6 py-2 lg:hidden">
+        <div class="flex flex-col text-base text-stone-600">
+          {Object.entries(CATEGORY_META).map(([slug, meta]) => (
+            <a href={`/category/${slug}/`} class="flex min-h-12 items-center border-b border-stone-100 hover:text-stone-900">
+              {meta.label}
+            </a>
+          ))}
+          <a href="/search/" class="flex min-h-12 items-center gap-2 font-medium text-stone-900" aria-label="Search">
+            <FiSearch aria-hidden="true" size={15} />
+            Search
+          </a>
+        </div>
+      </div>
     </header>
-    <main class="mx-auto max-w-5xl px-6 py-12" data-pagefind-body>
+
+    <script>
+      const toggle = document.getElementById('mobile-menu-toggle');
+      const menu = document.getElementById('mobile-menu');
+      const iconOpen = document.getElementById('mobile-menu-icon-open');
+      const iconClose = document.getElementById('mobile-menu-icon-close');
+
+      toggle?.addEventListener('click', () => {
+        const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        menu?.classList.toggle('hidden', isOpen);
+        iconOpen?.classList.toggle('hidden', !isOpen);
+        iconClose?.classList.toggle('hidden', isOpen);
+      });
+    </script>
+    <main id="main-content" class="mx-auto max-w-5xl px-6 py-12" data-pagefind-body>
       <slot />
     </main>
     <footer class="mt-20 bg-stone-900 text-stone-300">
@@ -76,9 +135,27 @@ const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness
           <a href="/" class="font-display text-lg font-semibold text-white">Etiquetteness</a>
           <div class="flex flex-wrap gap-5 text-stone-400">
             {Object.entries(CATEGORY_META).map(([slug, meta]) => (
-              <a href={`/category/${slug}`} class="hover:text-white">{meta.label}</a>
+              <a href={`/category/${slug}/`} class="hover:text-white">{meta.label}</a>
             ))}
-            <a href="/search" class="hover:text-white">Search</a>
+            <a href="/search/" class="hover:text-white">Search</a>
+            <a href="/about/" class="hover:text-white">About</a>
+            <a
+              href="https://github.com/wonsukchoi/etiquetteness"
+              class="flex items-center gap-1.5 hover:text-white"
+              aria-label="Contribute on GitHub"
+              rel="noopener noreferrer"
+            >
+              <FiGithub aria-hidden="true" size={16} />
+              GitHub
+            </a>
+            <a
+              href="mailto:wonsukchoi97@gmail.com"
+              class="flex items-center gap-1.5 hover:text-white"
+              aria-label="Email Etiquetteness"
+            >
+              <FiMail aria-hidden="true" size={16} />
+              Contact
+            </a>
           </div>
         </div>
 

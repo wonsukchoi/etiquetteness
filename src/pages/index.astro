@@ -1,8 +1,12 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import EntryCard from '../components/EntryCard.astro';
 import CategoryPills from '../components/CategoryPills.astro';
+import CountryPills from '../components/CountryPills.astro';
+import heroImage from '../assets/hero-brunch-table.jpg';
 import { getCollection } from 'astro:content';
+import { organizationNode, websiteNode } from '../lib/organization';
 
 const entries = (await getCollection('etiquette')).sort((a, b) =>
   a.data.title.localeCompare(b.data.title)
@@ -13,35 +17,53 @@ const description =
 
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Etiquetteness',
-  description,
-  url: Astro.site,
+  '@graph': [websiteNode(Astro.site!, description), organizationNode(Astro.site!)],
 };
 ---
 
 <Layout title="Etiquetteness" description={description}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
-  <div class="max-w-2xl">
-    <h1 class="font-display text-5xl font-semibold sm:text-6xl">
-      The etiquette nobody writes down.
-    </h1>
-    <p class="mt-4 text-lg text-stone-600">
-      Rice on the left, soup on the right. No smoking on a plane. The unspoken
-      rules people expect you to already know: by country, by situation.
-    </p>
+  <div class="grid items-center gap-10 sm:grid-cols-[1.1fr_1fr] sm:gap-12">
+    <div>
+      <h1 class="font-display text-5xl font-semibold sm:text-6xl">
+        The etiquette nobody writes down.
+      </h1>
+      <p class="mt-4 text-lg text-stone-600">
+        Rice on the left, soup on the right. No smoking on a plane. The unspoken
+        rules people expect you to already know: by country, by situation.
+      </p>
+    </div>
+    <div class="overflow-hidden rounded-xl" style="aspect-ratio: 4/3;">
+      <Image
+        src={heroImage}
+        alt="Overhead view of a shared brunch table — waffles, eggs, coffee, and a hand reaching in for food"
+        width={1200}
+        height={800}
+        widths={[400, 600, 900, 1200]}
+        sizes="(min-width: 640px) 480px, 100vw"
+        format="webp"
+        quality="mid"
+        loading="eager"
+        fetchpriority="high"
+        class="h-full w-full object-cover"
+      />
+    </div>
   </div>
 
-  <div class="mt-14">
-    <CategoryPills />
+  <div class="mt-14 space-y-4" data-filters>
+    <CategoryPills filterable />
+    <CountryPills filterable />
   </div>
 
-  <div class="entry-list mt-8 divide-y divide-stone-200" data-pagefind-ignore>
+  <p class="mt-6 text-sm text-stone-500" data-result-count aria-live="polite">{entries.length} rules</p>
+
+  <h2 class="sr-only">All rules</h2>
+  <div class="entry-list mt-2 divide-y divide-stone-200" data-entry-list data-pagefind-ignore>
     {
       entries.map((entry) => (
         <EntryCard
-          href={`/etiquette/${entry.id}`}
+          href={`/etiquette/${entry.id}/`}
           title={entry.data.title}
           country={entry.data.country}
           category={entry.data.category}
@@ -50,4 +72,83 @@ const jsonLd = {
       ))
     }
   </div>
+
+  <p class="mt-8 hidden text-center text-stone-500" data-empty-state>
+    No rules match both filters yet — try clearing one.
+  </p>
+
+  <script>
+    (function () {
+      const filtersEl = document.querySelector<HTMLElement>('[data-filters]');
+      const list = document.querySelector<HTMLElement>('[data-entry-list]');
+      const countEl = document.querySelector<HTMLElement>('[data-result-count]');
+      const emptyEl = document.querySelector<HTMLElement>('[data-empty-state]');
+      if (!filtersEl || !list) return;
+
+      const rows = Array.from(list.querySelectorAll<HTMLElement>('[data-entry-row]'));
+      const params = new URLSearchParams(location.search);
+
+      function render() {
+        const category = params.get('category') ?? '';
+        const country = params.get('country') ?? '';
+
+        let visible = 0;
+        for (const row of rows) {
+          const matches =
+            (!category || row.dataset.category === category) &&
+            (!country || row.dataset.country === country);
+          row.style.display = matches ? '' : 'none';
+          if (matches) visible += 1;
+        }
+
+        if (countEl) countEl.textContent = `${visible} rule${visible === 1 ? '' : 's'}`;
+        if (emptyEl) emptyEl.classList.toggle('hidden', visible !== 0);
+
+        for (const pill of filtersEl!.querySelectorAll<HTMLAnchorElement>('a[data-filter-key]')) {
+          const key = pill.dataset.filterKey!;
+          const value = pill.dataset.filterValue ?? '';
+          const isActive = (params.get(key) ?? '') === value;
+
+          const activeCls = (pill.dataset.activeClass ?? '').split(' ').filter(Boolean);
+          const restingCls = (pill.dataset.restingClass ?? '').split(' ').filter(Boolean);
+          pill.classList.remove(...activeCls, ...restingCls);
+          pill.classList.add(...(isActive ? activeCls : restingCls));
+          if (pill.dataset.activeStyle) pill.style.cssText = isActive ? pill.dataset.activeStyle : '';
+          if (isActive) pill.setAttribute('aria-current', 'true');
+          else pill.removeAttribute('aria-current');
+
+          const countEl = pill.querySelector<HTMLElement>('.pill-count');
+          if (countEl && (pill.dataset.countActiveClass || pill.dataset.countRestingClass)) {
+            const activeCountCls = (pill.dataset.countActiveClass ?? '').split(' ').filter(Boolean);
+            const restingCountCls = (pill.dataset.countRestingClass ?? '').split(' ').filter(Boolean);
+            countEl.classList.remove(...activeCountCls, ...restingCountCls);
+            countEl.classList.add(...(isActive ? activeCountCls : restingCountCls));
+          }
+
+          const next = new URLSearchParams(params);
+          if (value) next.set(key, value);
+          else next.delete(key);
+          const qs = next.toString();
+          pill.href = qs ? `/?${qs}` : '/';
+        }
+      }
+
+      filtersEl.addEventListener('click', (event) => {
+        const pill = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[data-filter-key]');
+        if (!pill) return;
+        event.preventDefault();
+
+        const key = pill.dataset.filterKey!;
+        const value = pill.dataset.filterValue ?? '';
+        if (value) params.set(key, value);
+        else params.delete(key);
+
+        const qs = params.toString();
+        history.pushState({}, '', qs ? `/?${qs}` : '/');
+        render();
+      });
+
+      render();
+    })();
+  </script>
 </Layout>
