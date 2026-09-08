@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const description = 'What Etiquetteness collects when you visit, and what it does not.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Privacy',
+  description,
+  url: new URL('/privacy', Astro.site),
+};
+---
+
+<Layout title="Privacy" description={description}>
+  <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <div class="max-w-2xl">
+    <h1 class="font-display text-5xl font-semibold">Privacy</h1>
+    <p class="mt-4 text-lg text-stone-600">
+      Etiquetteness is a static site with no accounts, no logins, and no forms that collect
+      personal data.
+    </p>
+
+    <h2 class="mt-14 font-display text-2xl font-semibold">Analytics</h2>
+    <p class="mt-4 text-stone-600">
+      This site uses a self-hosted, cookieless analytics script to see aggregate traffic —
+      which pages get visited, roughly how many people, and what country they're browsing
+      from. It doesn't use cookies, doesn't track you across other sites, and doesn't
+      identify individual visitors.
+    </p>
+
+    <h2 class="mt-14 font-display text-2xl font-semibold">Contact</h2>
+    <p class="mt-4 text-stone-600">
+      Questions about this page, or anything else on the site, can go to <a
+        href="mailto:wonsukchoi97@gmail.com"
+        class="underline decoration-stone-300 underline-offset-4 hover:decoration-stone-900"
+        >wonsukchoi97@gmail.com</a
+      >.
+    </p>
+  </div>
+</Layout>
