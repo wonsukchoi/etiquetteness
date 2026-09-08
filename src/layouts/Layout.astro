@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { CATEGORY_META } from '../lib/categories';
+import { toMetaDesc } from '../lib/seo';
 import { FiSearch, FiGithub, FiMail, FiMenu, FiX } from 'react-icons/fi';
 
 interface Props {
@@ -20,6 +21,10 @@ const {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const pageTitle = title === 'Etiquetteness' ? title : `${title} · Etiquetteness`;
 const ogImageURL = new URL(image, Astro.site);
+// Category/country descriptions are full narrative paragraphs meant for the
+// visible on-page <p> — clamp only the copy used in meta/og/twitter tags so
+// search results and social cards don't show truncated mid-sentence text.
+const metaDescription = toMetaDesc(description);
 ---
 
 <!doctype html>
@@ -30,13 +35,13 @@ const ogImageURL = new URL(image, Astro.site);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonicalURL} />
     <link rel="alternate" type="application/rss+xml" title="Etiquetteness" href="/rss.xml" />
 
     <meta property="og:type" content={type} />
     <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="Etiquetteness" />
     <meta property="og:image" content={ogImageURL} />
@@ -46,7 +51,7 @@ const ogImageURL = new URL(image, Astro.site);
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImageURL} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
