@@ -5,6 +5,7 @@ import { CATEGORY_META } from '../../lib/categories';
 import { COUNTRY_META, type Country } from '../../lib/countries';
 import { ORGANIZATION_ID, WEBSITE_ID } from '../../lib/organization';
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
 import { FiChevronRight, FiAlertTriangle, FiInfo, FiClock } from 'react-icons/fi';
 
 export async function getStaticPaths() {
@@ -125,6 +126,29 @@ const jsonLd = {
         </span>
       )}
     </div>
+
+    {entry.data.image && (
+      <figure class="mt-8">
+        <Image
+          src={entry.data.image}
+          alt={entry.data.imageAlt ?? entry.data.title}
+          class="w-full rounded-lg object-cover"
+          widths={[400, 800, 1200]}
+          sizes="(min-width: 768px) 700px, 100vw"
+        />
+        {entry.data.imageCredit && (
+          <figcaption class="mt-2 text-xs text-stone-400">
+            {entry.data.imageCreditUrl ? (
+              <a href={entry.data.imageCreditUrl} target="_blank" rel="noopener noreferrer" class="underline hover:text-stone-600">
+                {entry.data.imageCredit}
+              </a>
+            ) : (
+              entry.data.imageCredit
+            )}
+          </figcaption>
+        )}
+      </figure>
+    )}
 
     <article class="prose prose-stone mt-10 max-w-none prose-p:leading-relaxed">
       <Content />

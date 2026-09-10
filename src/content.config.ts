@@ -4,18 +4,25 @@ import { z } from 'zod';
 
 const etiquette = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: './src/content/etiquette' }),
-  schema: z.object({
-    title: z.string(),
-    country: z.string(), // "korea", "japan", "global", ...
-    category: z.enum(['dining', 'business', 'social', 'travel', 'gifts', 'home', 'dating']),
-    severity: z.enum(['strict', 'casual']),
-    summary: z.string(), // one-sentence rule, shown in listings
-    context: z.string().optional(), // why the rule exists
-    source: z.string().optional(),
-    sourceUrl: z.url().optional(),
-    publishedAt: z.coerce.date().optional(), // real first-added date, backfilled from git history
-    updatedAt: z.coerce.date().optional(), // only bump when THIS entry's content actually changes — not on unrelated commits, or dateModified/sitemap lastmod stop meaning anything
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      country: z.string(), // "korea", "japan", "global", ...
+      category: z.enum(['dining', 'business', 'social', 'travel', 'gifts', 'home', 'dating']),
+      severity: z.enum(['strict', 'casual']),
+      summary: z.string(), // one-sentence rule, shown in listings
+      context: z.string().optional(), // why the rule exists
+      source: z.string().optional(),
+      sourceUrl: z.url().optional(),
+      publishedAt: z.coerce.date().optional(), // real first-added date, backfilled from git history
+      updatedAt: z.coerce.date().optional(), // only bump when THIS entry's content actually changes — not on unrelated commits, or dateModified/sitemap lastmod stop meaning anything
+      // Optional illustrative photo, colocated with the entry (./file.jpg).
+      // Real free-license photos only — see imageCredit/imageCreditUrl below.
+      image: image().optional(),
+      imageAlt: z.string().optional(),
+      imageCredit: z.string().optional(), // e.g. "Photo by X, CC BY-SA 4.0"
+      imageCreditUrl: z.url().optional(), // link to the source file page
+    }),
 });
 
 const phrases = defineCollection({
