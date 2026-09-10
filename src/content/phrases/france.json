@@ -1,0 +1,15 @@
+{
+  "country": "france",
+  "phrases": [
+    { "phrase": "Hello", "translation": "Bonjour", "pronunciation": "Bon-zhoor" },
+    { "phrase": "Thank you", "translation": "Merci", "pronunciation": "Mer-see" },
+    { "phrase": "Please", "translation": "S'il vous plaît", "pronunciation": "Seel voo pleh" },
+    { "phrase": "Yes", "translation": "Oui", "pronunciation": "Wee" },
+    { "phrase": "No", "translation": "Non", "pronunciation": "Noh" },
+    { "phrase": "Excuse me", "translation": "Excusez-moi", "pronunciation": "Ex-koo-zay mwah" },
+    { "phrase": "How much is this?", "translation": "Combien ça coûte ?", "pronunciation": "Kom-byan sah koot?" },
+    { "phrase": "Where is the bathroom?", "translation": "Où sont les toilettes ?", "pronunciation": "Oo son lay twah-let?" },
+    { "phrase": "Do you speak English?", "translation": "Parlez-vous anglais ?", "pronunciation": "Par-lay voo ahn-glay?" },
+    { "phrase": "The bill, please", "translation": "L'addition, s'il vous plaît", "pronunciation": "Lah-dee-see-ohn, seel voo pleh" }
+  ]
+}

@@ -18,4 +18,19 @@ const etiquette = defineCollection({
   }),
 });
 
-export const collections = { etiquette };
+const phrases = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/phrases' }),
+  schema: z.object({
+    country: z.string(), // "korea", "japan", ... — must match an etiquette entry's `country` value
+    phrases: z.array(
+      z.object({
+        phrase: z.string(), // English
+        translation: z.string(), // local-language script
+        pronunciation: z.string(), // simplified romanized guide
+        note: z.string().optional(), // usage caveat, e.g. gendered particles, register
+      })
+    ),
+  }),
+});
+
+export const collections = { etiquette, phrases };

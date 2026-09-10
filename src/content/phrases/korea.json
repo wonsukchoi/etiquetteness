@@ -1,0 +1,15 @@
+{
+  "country": "korea",
+  "phrases": [
+    { "phrase": "Hello", "translation": "안녕하세요", "pronunciation": "Annyeonghaseyo" },
+    { "phrase": "Thank you", "translation": "감사합니다", "pronunciation": "Gamsahamnida" },
+    { "phrase": "Please", "translation": "주세요", "pronunciation": "Juseyo", "note": "Literally \"please give me\" — attach it to what you want, e.g. \"water, juseyo.\"" },
+    { "phrase": "Yes", "translation": "네", "pronunciation": "Ne" },
+    { "phrase": "No", "translation": "아니요", "pronunciation": "Aniyo" },
+    { "phrase": "Excuse me", "translation": "실례합니다", "pronunciation": "Sillyehamnida" },
+    { "phrase": "How much is this?", "translation": "이거 얼마예요?", "pronunciation": "Igeo eolmayeyo?" },
+    { "phrase": "Where is the bathroom?", "translation": "화장실이 어디예요?", "pronunciation": "Hwajangsiri eodiyeyo?" },
+    { "phrase": "Do you speak English?", "translation": "영어 하세요?", "pronunciation": "Yeongeo haseyo?" },
+    { "phrase": "The bill, please", "translation": "계산서 주세요", "pronunciation": "Gyesanseo juseyo" }
+  ]
+}
