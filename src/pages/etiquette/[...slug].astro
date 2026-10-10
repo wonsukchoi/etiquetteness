@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import { CATEGORY_META } from '../../lib/categories';
 import { COUNTRY_META, type Country } from '../../lib/countries';
-import { ORGANIZATION_ID, WEBSITE_ID } from '../../lib/organization';
+import { ORGANIZATION_ID, WEBSITE_ID, organizationNode, websiteNode } from '../../lib/organization';
 import { getCollection, render } from 'astro:content';
 import { FiChevronRight, FiAlertTriangle, FiInfo, FiClock } from 'react-icons/fi';
 
@@ -52,6 +52,8 @@ const jsonLd = {
       publisher: { '@id': ORGANIZATION_ID },
       author: { '@id': ORGANIZATION_ID },
     },
+    websiteNode(Astro.site!),
+    organizationNode(Astro.site!),
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
