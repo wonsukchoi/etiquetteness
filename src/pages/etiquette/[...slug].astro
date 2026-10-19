@@ -70,7 +70,7 @@ const jsonLd = {
 ---
 
 <Layout
-  title={entry.data.title}
+  title={entry.data.seoTitle ?? entry.data.title}
   description={entry.data.summary}
   type="article"
   image={`/og/${entry.id}.png`}
