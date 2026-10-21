@@ -9,6 +9,8 @@ interface Props {
   description?: string;
   type?: 'website' | 'article';
   image?: string;
+  /** Keep the page out of search results (utility pages such as /search/). */
+  noindex?: boolean;
 }
 
 const {
@@ -16,6 +18,7 @@ const {
   description = 'Unwritten etiquette rules from around the world.',
   type = 'website',
   image = '/og-image.jpg',
+  noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -36,6 +39,7 @@ const metaDescription = toMetaDesc(description);
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={metaDescription} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonicalURL} />
     <link rel="alternate" type="application/rss+xml" title="Etiquetteness" href="/rss.xml" />
 
