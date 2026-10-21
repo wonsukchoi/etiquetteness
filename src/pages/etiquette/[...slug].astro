@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import { CATEGORY_META } from '../../lib/categories';
-import { COUNTRY_META, type Country } from '../../lib/countries';
+import { COUNTRY_META, entryPageTitle, type Country } from '../../lib/countries';
 import { ORGANIZATION_ID, WEBSITE_ID } from '../../lib/organization';
 import { getCollection, render } from 'astro:content';
 import { FiChevronRight, FiAlertTriangle, FiInfo, FiClock } from 'react-icons/fi';
@@ -70,7 +70,7 @@ const jsonLd = {
 ---
 
 <Layout
-  title={entry.data.seoTitle ?? entry.data.title}
+  title={entryPageTitle(entry.data.country, entry.data.seoTitle ?? entry.data.title)}
   description={entry.data.summary}
   type="article"
   image={`/og/${entry.id}.png`}
