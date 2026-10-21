@@ -3,9 +3,10 @@ import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import CategoryPills from '../../components/CategoryPills.astro';
 import CountryPills from '../../components/CountryPills.astro';
+import PhrasesSection from '../../components/PhrasesSection.astro';
 import { COUNTRY_META, type Country } from '../../lib/countries';
 import { WEBSITE_ID } from '../../lib/organization';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 
 export async function getStaticPaths() {
   const entries = await getCollection('etiquette');
@@ -18,6 +19,7 @@ export async function getStaticPaths() {
 
 const { country } = Astro.params as { country: string };
 const { entries } = Astro.props;
+const phrasesEntry = await getEntry('phrases', country);
 const countryLabel = COUNTRY_META[country as Country]?.label ?? country.replace(/-/g, ' ');
 const description =
   COUNTRY_META[country as Country]?.description ?? `Etiquette rules for ${countryLabel}.`;
@@ -80,4 +82,6 @@ const jsonLd = {
       ))
     }
   </div>
+
+  {phrasesEntry && <PhrasesSection countryLabel={countryLabel} phrases={phrasesEntry.data.phrases} />}
 </Layout>

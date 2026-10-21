@@ -1,0 +1,15 @@
+{
+  "country": "japan",
+  "phrases": [
+    { "phrase": "Hello", "translation": "こんにちは", "pronunciation": "Konnichiwa" },
+    { "phrase": "Thank you", "translation": "ありがとうございます", "pronunciation": "Arigatou gozaimasu" },
+    { "phrase": "Please", "translation": "お願いします", "pronunciation": "Onegaishimasu" },
+    { "phrase": "Yes", "translation": "はい", "pronunciation": "Hai" },
+    { "phrase": "No", "translation": "いいえ", "pronunciation": "Iie" },
+    { "phrase": "Excuse me", "translation": "すみません", "pronunciation": "Sumimasen" },
+    { "phrase": "How much is this?", "translation": "これはいくらですか", "pronunciation": "Kore wa ikura desu ka?" },
+    { "phrase": "Where is the bathroom?", "translation": "トイレはどこですか", "pronunciation": "Toire wa doko desu ka?" },
+    { "phrase": "Do you speak English?", "translation": "英語を話せますか", "pronunciation": "Eigo o hanasemasu ka?" },
+    { "phrase": "The bill, please", "translation": "お会計をお願いします", "pronunciation": "Okaikei o onegaishimasu" }
+  ]
+}

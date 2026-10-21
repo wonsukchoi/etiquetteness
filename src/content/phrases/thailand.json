@@ -1,0 +1,15 @@
+{
+  "country": "thailand",
+  "phrases": [
+    { "phrase": "Hello", "translation": "สวัสดีครับ/ค่ะ", "pronunciation": "Sawasdee khrap / kha", "note": "Men say khrap, women say kha — the ending particle marks the speaker's gender, not the listener's." },
+    { "phrase": "Thank you", "translation": "ขอบคุณครับ/ค่ะ", "pronunciation": "Khob khun khrap / kha" },
+    { "phrase": "Please", "translation": "กรุณา", "pronunciation": "Karuna", "note": "Thai doesn't have a direct everyday equivalent to English \"please\" — this word exists but reads as formal/written, closer to signage than casual speech." },
+    { "phrase": "Yes", "translation": "ใช่", "pronunciation": "Chai" },
+    { "phrase": "No", "translation": "ไม่ใช่", "pronunciation": "Mai chai" },
+    { "phrase": "Excuse me", "translation": "ขอโทษ", "pronunciation": "Khor thot" },
+    { "phrase": "How much is this?", "translation": "นี่เท่าไหร่", "pronunciation": "Ni tao rai?" },
+    { "phrase": "Where is the bathroom?", "translation": "ห้องน้ำอยู่ที่ไหน", "pronunciation": "Hong nam yu tee nai?" },
+    { "phrase": "Do you speak English?", "translation": "พูดภาษาอังกฤษได้ไหม", "pronunciation": "Phood phasa angkrit dai mai?" },
+    { "phrase": "The bill, please", "translation": "เช็คบิลด้วยครับ/ค่ะ", "pronunciation": "Chek bin duai khrap / kha" }
+  ]
+}
