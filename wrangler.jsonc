@@ -3,7 +3,8 @@
 	"compatibility_date": "2026-08-31",
 	"name": "etiquetteness",
 	"assets": {
-		"directory": "./dist"
+		"directory": "./dist",
+		"not_found_handling": "404-page"
 	},
 	"routes": [
 		{ "pattern": "etiquetteness.com", "custom_domain": true }

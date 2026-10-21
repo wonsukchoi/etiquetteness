@@ -17,3 +17,7 @@
 # shorter revalidatable window instead of immutable.
 /og/*
   Cache-Control: public, max-age=86400
+
+# Workers assets send text/plain with no charset; llms.txt has em-dashes.
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
