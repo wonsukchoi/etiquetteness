@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
 
+# Standing policy (2026-10-31): allow AI bots, block only Bytespider.
+User-agent: Bytespider
+Disallow: /
+
 Sitemap: https://etiquetteness.com/sitemap-index.xml
