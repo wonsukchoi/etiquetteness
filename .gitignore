@@ -33,3 +33,4 @@ pnpm-debug.log*
 
 # wrangler local cache
 .wrangler/
+.dual-graph-context/
