@@ -17,6 +17,13 @@ import Layout from '../layouts/Layout.astro';
         element: '#search',
         showSubResults: false,
         showImages: false,
+        // Arriving from the "Search" link, the visitor should be able to type at once.
+        autofocus: true,
+      });
+      // Pagefind's input has only a placeholder; give it a real accessible name.
+      requestAnimationFrame(() => {
+        const input = document.querySelector('#search input');
+        if (input && !input.getAttribute('aria-label')) input.setAttribute('aria-label', 'Search rules by country, category or keyword');
       });
     });
   </script>
