@@ -127,6 +127,34 @@ export const COUNTRY_META: Record<Country, { label: string; code: string; descri
   },
 };
 
+function countryLabel(country: string): string {
+  return COUNTRY_META[country as Country]?.label ?? country.replace(/-/g, ' ');
+}
+
+/** The country page's H1 and Article headline. */
+export function countryHeading(country: string): string {
+  return country === 'global' ? 'Etiquette That Applies Everywhere' : `${countryLabel(country)} Etiquette`;
+}
+
+// The layout appends " · Etiquetteness" (16 characters); the full <title>
+// should stay within 80.
+const MAX_COUNTRY_TITLE = 64;
+
+/**
+ * The country page's <title>, e.g. "Japan Etiquette: 14 Unwritten Rules for
+ * Visitors". Fails the build rather than ship a title that runs past the budget.
+ */
+export function countryPageTitle(country: string, ruleCount: number): string {
+  const title =
+    country === 'global'
+      ? 'Etiquette Rules That Apply in Every Country'
+      : `${countryLabel(country)} Etiquette: ${ruleCount} Unwritten Rule${ruleCount === 1 ? '' : 's'} for Visitors`;
+  if (title.length > MAX_COUNTRY_TITLE) {
+    throw new Error(`Country page title for "${country}" is ${title.length} chars (max ${MAX_COUNTRY_TITLE}): ${title}`);
+  }
+  return title;
+}
+
 // Words that already tie a title to its country, so the <title> doesn't need
 // the "Country: " prefix (e.g. "Do the Thai wai" on a Thailand entry).
 const COUNTRY_TERMS: Record<Exclude<Country, 'global'>, string[]> = {
