@@ -1,6 +1,7 @@
 // Generates /llms.txt at build time from the actual content collection, so
-// it can't drift out of sync with the real category/country/entry list the
-// way a hand-written static file would. Output goes to public/llms.txt,
+// it can't drift out of sync with the real category/country/rule list the
+// way a hand-written static file would. Rules are listed per country, linked
+// to their sections on the country pages (/country/<c>/#<slug>). Output goes to public/llms.txt,
 // which astro build then copies as a normal static asset.
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -8,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import * as yaml from 'js-yaml';
 import { CATEGORIES, CATEGORY_META, type Category } from '../src/lib/categories.ts';
 import { COUNTRIES, COUNTRY_META } from '../src/lib/countries.ts';
+import { compareRules, rulePath } from '../src/lib/rules.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const contentDir = path.join(root, 'src/content/etiquette');
@@ -20,6 +22,7 @@ interface EntryMeta {
   title: string;
   summary: string;
   category: Category;
+  severity: 'strict' | 'casual';
 }
 
 function readEntries(): EntryMeta[] {
@@ -41,10 +44,12 @@ function readEntries(): EntryMeta[] {
         title: String(data.title),
         summary: String(data.summary),
         category: data.category as Category,
+        severity: data.severity as EntryMeta['severity'],
       });
     }
   }
-  return entries.sort((a, b) => a.title.localeCompare(b.title));
+  // Same order as the country pages: category, strict before casual, title.
+  return entries.sort((a, b) => compareRules({ data: a }, { data: b }));
 }
 
 function main() {
@@ -55,11 +60,11 @@ function main() {
   lines.push('# Etiquetteness');
   lines.push('');
   lines.push(
-    '> The etiquette nobody writes down: unwritten cultural and social rules, by country and situation. Each entry is one sourced, specific custom — not general travel advice.'
+    '> The etiquette nobody writes down: unwritten cultural and social rules, by country and situation. Each rule is one sourced, specific custom — not general travel advice.'
   );
   lines.push('');
   lines.push(
-    `Content (everything under /etiquette/, /country/, /category/) is licensed CC BY-NC 4.0 — reuse and citation with attribution is welcome for non-commercial purposes. Source code is MIT. Full terms and sourcing methodology: ${site}/about/`
+    `Content (everything under /country/ and /category/) is licensed CC BY-NC 4.0 — reuse and citation with attribution is welcome for non-commercial purposes. Source code is MIT. Full terms and sourcing methodology: ${site}/about/`
   );
   lines.push('');
 
@@ -78,14 +83,16 @@ function main() {
   }
   lines.push('');
 
-  lines.push('## All Entries');
-  for (const entry of entries) {
-    lines.push(`- [${entry.title}](${site}/etiquette/${entry.country}/${entry.slug}/): ${entry.summary}`);
+  for (const country of liveCountries) {
+    lines.push(`## Rules: ${COUNTRY_META[country].label}`);
+    for (const entry of entries.filter((e) => e.country === country)) {
+      lines.push(`- [${entry.title}](${site}${rulePath(country, entry.slug)}): ${entry.summary}`);
+    }
+    lines.push('');
   }
-  lines.push('');
 
   writeFileSync(outPath, lines.join('\n'), 'utf-8');
-  console.log(`Generated llms.txt with ${entries.length} entries in public/llms.txt`);
+  console.log(`Generated llms.txt with ${entries.length} rules across ${liveCountries.length} countries in public/llms.txt`);
 }
 
 main();

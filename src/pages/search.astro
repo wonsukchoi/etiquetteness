@@ -15,7 +15,8 @@ import Layout from '../layouts/Layout.astro';
       if (typeof PagefindUI === 'undefined') return;
       new PagefindUI({
         element: '#search',
-        showSubResults: false,
+        // Each country page holds many rules; sub-results link straight to the rule's section.
+        showSubResults: true,
         showImages: false,
         // Arriving from the "Search" link, the visitor should be able to type at once.
         autofocus: true,

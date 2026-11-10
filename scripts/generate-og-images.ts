@@ -1,5 +1,7 @@
-// Generates a per-entry Open Graph share image (1200x630) at build time.
-// Output goes to public/og/<country>/<slug>.png, which astro build then
+// Generates one Open Graph share image (1200x630) per country page at build
+// time: the page heading, its rule count and its biggest categories. Rules have
+// no pages of their own, so there are no per-rule images.
+// Output goes to public/og/country/<country>.png, which astro build then
 // copies as a normal static asset — no runtime image generation, no
 // server route, consistent with the rest of this site being fully static.
 import { readFileSync, readdirSync, statSync, mkdirSync, existsSync } from 'node:fs';
@@ -8,12 +10,12 @@ import { fileURLToPath } from 'node:url';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
 import * as yaml from 'js-yaml';
-import { CATEGORY_META, type Category } from '../src/lib/categories.ts';
-import { COUNTRY_META, type Country } from '../src/lib/countries.ts';
+import { CATEGORIES, CATEGORY_META, type Category } from '../src/lib/categories.ts';
+import { countryHeading } from '../src/lib/countries.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const contentDir = path.join(root, 'src/content/etiquette');
-const outDir = path.join(root, 'public/og');
+const outDir = path.join(root, 'public/og/country');
 const fontsDir = path.join(root, 'scripts/og-fonts');
 
 const fonts = {
@@ -25,10 +27,14 @@ const fonts = {
 
 interface EntryMeta {
   country: string;
-  slug: string;
-  title: string;
   category: Category;
-  severity: string;
+}
+
+interface CountryCard {
+  country: string;
+  heading: string;
+  ruleCount: number;
+  topCategories: Category[];
 }
 
 function readEntries(): EntryMeta[] {
@@ -44,35 +50,41 @@ function readEntries(): EntryMeta[] {
       if (!match) continue;
 
       const data = yaml.load(match[1]) as Record<string, unknown>;
-      entries.push({
-        country,
-        slug: file.replace(/\.mdx$/, ''),
-        title: String(data.title),
-        category: data.category as Category,
-        severity: String(data.severity),
-      });
+      entries.push({ country: String(data.country), category: data.category as Category });
     }
   }
   return entries;
 }
 
-function titleFontSize(title: string): number {
-  if (title.length <= 28) return 68;
-  if (title.length <= 44) return 56;
-  if (title.length <= 60) return 48;
-  return 40;
+function countryCards(entries: EntryMeta[]): CountryCard[] {
+  const countries = [...new Set(entries.map((e) => e.country))].sort();
+  return countries.map((country) => {
+    const rules = entries.filter((e) => e.country === country);
+    const count = (c: Category) => rules.filter((e) => e.category === c).length;
+    const topCategories = CATEGORIES.filter((c) => count(c) > 0)
+      .sort((a, b) => count(b) - count(a) || CATEGORIES.indexOf(a) - CATEGORIES.indexOf(b))
+      .slice(0, 3);
+    return { country, heading: countryHeading(country), ruleCount: rules.length, topCategories };
+  });
 }
 
-function buildTree(entry: EntryMeta) {
-  const meta = CATEGORY_META[entry.category];
-  const countryLabel = COUNTRY_META[entry.country as Country]?.label ?? entry.country.replace(/-/g, ' ');
+function titleFontSize(title: string): number {
+  if (title.length <= 20) return 88;
+  if (title.length <= 28) return 72;
+  return 60;
+}
 
+function buildTree(card: CountryCard) {
   return {
     type: 'div',
     props: {
       style: {
         width: 1200,
         height: 630,
+        // satori 0.63 sizes boxes content-box like CSS does: without this the
+        // 72px/64px padding grows the card past 1200x630 and the footer row
+        // falls off the image.
+        boxSizing: 'border-box',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -137,21 +149,7 @@ function buildTree(entry: EntryMeta) {
                     textTransform: 'uppercase',
                     color: '#78716c',
                   },
-                  children: [
-                    {
-                      type: 'div',
-                      props: {
-                        style: {
-                          display: 'flex',
-                          width: 12,
-                          height: 12,
-                          borderRadius: 999,
-                          background: meta.color,
-                        },
-                      },
-                    },
-                    { type: 'div', props: { children: `${meta.label} · ${countryLabel}` } },
-                  ],
+                  children: `${card.ruleCount} unwritten rule${card.ruleCount === 1 ? '' : 's'}`,
                 },
               },
               {
@@ -160,14 +158,14 @@ function buildTree(entry: EntryMeta) {
                   style: {
                     display: 'flex',
                     marginTop: 20,
-                    fontSize: titleFontSize(entry.title),
+                    fontSize: titleFontSize(card.heading),
                     lineHeight: 1.15,
                     fontFamily: 'Fraunces',
                     fontWeight: 700,
                     color: '#1c1917',
                     maxWidth: 1000,
                   },
-                  children: entry.title,
+                  children: card.heading,
                 },
               },
             ],
@@ -190,17 +188,30 @@ function buildTree(entry: EntryMeta) {
               {
                 type: 'div',
                 props: {
-                  style: {
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '8px 16px',
-                    borderRadius: 999,
-                    border: '2px solid #e7e5e4',
-                    textTransform: 'capitalize',
-                    color: '#57534e',
-                  },
-                  children: entry.severity,
+                  style: { display: 'flex', alignItems: 'center', gap: 12 },
+                  children: card.topCategories.map((category) => ({
+                    type: 'div',
+                    props: {
+                      style: {
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '8px 16px',
+                        borderRadius: 999,
+                        border: '2px solid #e7e5e4',
+                        color: '#57534e',
+                      },
+                      children: [
+                        {
+                          type: 'div',
+                          props: {
+                            style: { display: 'flex', width: 10, height: 10, borderRadius: 999, background: CATEGORY_META[category].color },
+                          },
+                        },
+                        { type: 'div', props: { children: CATEGORY_META[category].label } },
+                      ],
+                    },
+                  })),
                 },
               },
               { type: 'div', props: { children: 'etiquetteness.com' } },
@@ -213,11 +224,11 @@ function buildTree(entry: EntryMeta) {
 }
 
 async function main() {
-  const entries = readEntries();
+  const cards = countryCards(readEntries());
   if (!existsSync(outDir)) mkdirSync(outDir, { recursive: true });
 
-  for (const entry of entries) {
-    const svg = await satori(buildTree(entry) as any, {
+  for (const card of cards) {
+    const svg = await satori(buildTree(card) as any, {
       width: 1200,
       height: 630,
       fonts: [
@@ -231,13 +242,11 @@ async function main() {
     const resvg = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } });
     const png = resvg.render().asPng();
 
-    const dir = path.join(outDir, entry.country);
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-    const outPath = path.join(dir, `${entry.slug}.png`);
+    const outPath = path.join(outDir, `${card.country}.png`);
     await import('node:fs/promises').then((fs) => fs.writeFile(outPath, png));
   }
 
-  console.log(`Generated ${entries.length} OG images in public/og/`);
+  console.log(`Generated ${cards.length} country OG images in public/og/country/`);
 }
 
 main();
