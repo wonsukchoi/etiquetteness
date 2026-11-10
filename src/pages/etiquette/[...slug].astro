@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import EntryCard from '../../components/EntryCard.astro';
 import { CATEGORY_META } from '../../lib/categories';
-import { COUNTRY_META, type Country } from '../../lib/countries';
+import { COUNTRY_META, entryPageTitle, type Country } from '../../lib/countries';
 import { ORGANIZATION_ID, WEBSITE_ID, organizationNode, websiteNode } from '../../lib/organization';
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -31,6 +31,10 @@ const relatedByCategory = entries
 
 const updatedAtISO = entry.data.updatedAt?.toISOString();
 const publishedAtISO = entry.data.publishedAt?.toISOString() ?? updatedAtISO;
+// updatedAt is date-only (midnight UTC) while publishedAt carries a time, so a
+// same-day edit would otherwise put dateModified before datePublished.
+const modifiedAtISO =
+  updatedAtISO && publishedAtISO && updatedAtISO < publishedAtISO ? publishedAtISO : (updatedAtISO ?? publishedAtISO);
 
 const pageURL = new URL(Astro.url.pathname, Astro.site);
 const jsonLd = {
@@ -42,9 +46,9 @@ const jsonLd = {
       headline: entry.data.title,
       description: entry.data.summary,
       articleSection: meta.label,
-      about: { '@type': 'Country', name: countryLabel },
+      about: { '@type': entry.data.country === 'global' ? 'Thing' : 'Country', name: countryLabel },
       datePublished: publishedAtISO,
-      dateModified: updatedAtISO ?? publishedAtISO,
+      dateModified: modifiedAtISO,
       image: new URL(`/og/${entry.id}.png`, Astro.site).toString(),
       url: pageURL,
       license: 'https://creativecommons.org/licenses/by-nc/4.0/',
@@ -68,12 +72,13 @@ const jsonLd = {
         { '@type': 'ListItem', position: 3, name: entry.data.title, item: pageURL.toString() },
       ],
     },
+    organizationNode(Astro.site!),
   ],
 };
 ---
 
 <Layout
-  title={entry.data.seoTitle ?? entry.data.title}
+  title={entryPageTitle(entry.data.country, entry.data.seoTitle ?? entry.data.title)}
   description={entry.data.summary}
   type="article"
   image={`/og/${entry.id}.png`}

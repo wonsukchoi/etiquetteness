@@ -1,4 +1,8 @@
 ---
+// Self-hosted fonts (were Google Fonts: a render-blocking third-party
+// stylesheet on every page). Bundled into hashed /_astro/ assets.
+import '@fontsource-variable/fraunces/opsz.css';
+import '@fontsource-variable/inter';
 import '../styles/global.css';
 import { CATEGORY_META } from '../lib/categories';
 import { toMetaDesc } from '../lib/seo';
@@ -9,6 +13,8 @@ interface Props {
   description?: string;
   type?: 'website' | 'article';
   image?: string;
+  /** Keep the page out of search results (utility pages such as /search/). */
+  noindex?: boolean;
 }
 
 const {
@@ -16,6 +22,7 @@ const {
   description = 'Unwritten etiquette rules from around the world.',
   type = 'website',
   image = '/og-image.jpg',
+  noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -36,6 +43,7 @@ const metaDescription = toMetaDesc(description);
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={metaDescription} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonicalURL} />
     <link rel="alternate" type="application/rss+xml" title="Etiquetteness" href="/rss.xml" />
 
@@ -53,13 +61,6 @@ const metaDescription = toMetaDesc(description);
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImageURL} />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
     <script is:inline defer src="https://analytics.wonsukchoi.com/script.js" data-website-id="ed6491aa-d209-466a-9124-919d90023a0b"></script>
     <slot name="head" />
   </head>

@@ -10,11 +10,13 @@ export function organizationNode(site: string | URL) {
     '@id': ORGANIZATION_ID,
     name: 'Etiquetteness',
     url: String(site),
+    // Square mark (public/logo.png, the favicon "E" on white): Google wants a
+    // square-ish logo, not the 1200x630 social card used for og:image.
     logo: {
       '@type': 'ImageObject',
-      url: new URL('/og-image.jpg', site).toString(),
-      width: 1200,
-      height: 630,
+      url: new URL('/logo.png', site).toString(),
+      width: 512,
+      height: 512,
     },
     sameAs: ['https://github.com/wonsukchoi/etiquetteness'],
   };

@@ -41,7 +41,6 @@ function readEtiquetteLastmods() {
 
   const lastmodByPath = new Map();
   lastmodByPath.set('/', siteLastmod);
-  lastmodByPath.set('/search/', siteLastmod);
 
   for (const e of entries) {
     lastmodByPath.set(`/etiquette/${e.country}/${e.slug}/`, e.updatedAt ?? siteLastmod);
@@ -69,6 +68,9 @@ export default defineConfig({
 
   integrations: [
     sitemap({
+      // /search/ is a search box with no content of its own; it is noindex
+      // (search.astro), so it stays out of the sitemap too.
+      filter: (page) => new URL(page).pathname !== '/search/',
       serialize(item) {
         const lastmod = lastmodByPath.get(new URL(item.url).pathname) ?? siteLastmod;
         return { ...item, lastmod };
