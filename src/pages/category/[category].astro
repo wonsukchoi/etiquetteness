@@ -5,6 +5,7 @@ import CategoryPills from '../../components/CategoryPills.astro';
 import CountryPills from '../../components/CountryPills.astro';
 import { CATEGORIES, CATEGORY_META, type Category } from '../../lib/categories';
 import { WEBSITE_ID } from '../../lib/organization';
+import { rulePath, ruleSlug } from '../../lib/rules';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -44,7 +45,7 @@ const jsonLd = {
       itemListElement: entries.map((entry, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        url: new URL(`/etiquette/${entry.id}/`, Astro.site).toString(),
+        url: new URL(rulePath(entry.data.country, ruleSlug(entry.id)), Astro.site).toString(),
       })),
     },
   ],
@@ -72,7 +73,7 @@ const jsonLd = {
       {
         entries.map((entry) => (
           <EntryCard
-            href={`/etiquette/${entry.id}/`}
+            href={rulePath(entry.data.country, ruleSlug(entry.id))}
             title={entry.data.title}
             country={entry.data.country}
             category={entry.data.category}
