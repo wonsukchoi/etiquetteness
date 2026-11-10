@@ -20,7 +20,10 @@ export function organizationNode(site: string | URL) {
   };
 }
 
-export function websiteNode(site: string | URL, description: string) {
+export const SITE_DESCRIPTION =
+  'The etiquette nobody writes down: unwritten cultural and social rules, by country and situation.';
+
+export function websiteNode(site: string | URL, description: string = SITE_DESCRIPTION) {
   return {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,

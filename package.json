@@ -21,7 +21,7 @@
     "@astrojs/sitemap": "^3.7.4",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.2.10",
+    "astro": "^7.4.7",
     "pagefind": "^1.5.2",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -36,7 +36,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@types/js-yaml": "^4.0.9",
     "js-yaml": "^5.4.1",
-    "satori": "^0.33.4",
+    "satori": "^0.63.2",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3"
   }

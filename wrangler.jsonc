@@ -3,7 +3,10 @@
 	"compatibility_date": "2026-08-31",
 	"name": "etiquetteness",
 	"assets": {
-		"directory": "./dist"
+		"directory": "./dist",
+		// Serve dist/404.html (src/pages/404.astro) for unknown URLs. The default, "none",
+		// answers with an empty 404 body, so a lost visitor saw a blank page.
+		"not_found_handling": "404-page"
 	},
 	"routes": [
 		{ "pattern": "etiquetteness.com", "custom_domain": true }

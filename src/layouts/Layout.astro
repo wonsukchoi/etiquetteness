@@ -73,7 +73,7 @@ const metaDescription = toMetaDesc(description);
     <header class="bg-[#fbf9f6]/90 backdrop-blur">
       <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
         <a href="/" class="leading-tight">
-          <span class="block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400">Culture &amp; Custom</span>
+          <span class="block text-[11px] font-medium uppercase tracking-[0.2em] text-stone-500">Culture &amp; Custom</span>
           <span class="font-display text-xl font-semibold">Etiquetteness</span>
         </a>
 
@@ -138,16 +138,16 @@ const metaDescription = toMetaDesc(description);
       <div class="mx-auto max-w-5xl px-6 py-16">
         <div class="flex flex-wrap items-center justify-between gap-4 text-sm">
           <a href="/" class="font-display text-lg font-semibold text-white">Etiquetteness</a>
-          <div class="flex flex-wrap gap-5 text-stone-400">
+          <div class="flex flex-wrap gap-x-5 gap-y-1 text-stone-400">
             {Object.entries(CATEGORY_META).map(([slug, meta]) => (
-              <a href={`/category/${slug}/`} class="hover:text-white">{meta.label}</a>
+              <a href={`/category/${slug}/`} class="flex min-h-11 items-center hover:text-white">{meta.label}</a>
             ))}
-            <a href="/search/" class="hover:text-white">Search</a>
-            <a href="/about/" class="hover:text-white">About</a>
-            <a href="/privacy/" class="hover:text-white">Privacy</a>
+            <a href="/search/" class="flex min-h-11 items-center hover:text-white">Search</a>
+            <a href="/about/" class="flex min-h-11 items-center hover:text-white">About</a>
+            <a href="/privacy/" class="flex min-h-11 items-center hover:text-white">Privacy</a>
             <a
               href="https://github.com/wonsukchoi/etiquetteness"
-              class="flex items-center gap-1.5 hover:text-white"
+              class="flex min-h-11 items-center gap-1.5 hover:text-white"
               aria-label="Contribute on GitHub"
               rel="noopener noreferrer"
             >
@@ -156,7 +156,7 @@ const metaDescription = toMetaDesc(description);
             </a>
             <a
               href="mailto:wonsukchoi97@gmail.com"
-              class="flex items-center gap-1.5 hover:text-white"
+              class="flex min-h-11 items-center gap-1.5 hover:text-white"
               aria-label="Email Etiquetteness"
             >
               <FiMail aria-hidden="true" size={16} />
