@@ -25,9 +25,9 @@ export type Country = (typeof COUNTRIES)[number];
 // "global" keeps its globe glyph since that's a single-codepoint symbol
 // emoji, not a regional-indicator flag, so it renders consistently.
 //
-// `description` synthesizes the actual entries filed under that country —
+// `description` synthesizes the actual rules filed under that country —
 // it doesn't introduce new claims, just ties together facts already
-// verified and sourced on the individual entry pages.
+// verified and sourced in the rule sections of the country page.
 export const COUNTRY_META: Record<Country, { label: string; code: string; description: string }> = {
   japan: {
     label: 'Japan',
@@ -126,3 +126,31 @@ export const COUNTRY_META: Record<Country, { label: string; code: string; descri
       "A handful of rules apply no matter which country you're flying to or through — not local custom, just the baseline expected of every passenger.",
   },
 };
+
+function countryLabel(country: string): string {
+  return COUNTRY_META[country as Country]?.label ?? country.replace(/-/g, ' ');
+}
+
+/** The country page's H1 and Article headline. */
+export function countryHeading(country: string): string {
+  return country === 'global' ? 'Etiquette That Applies Everywhere' : `${countryLabel(country)} Etiquette`;
+}
+
+// The layout appends " · Etiquetteness" (16 characters); the full <title>
+// should stay within 80.
+const MAX_COUNTRY_TITLE = 64;
+
+/**
+ * The country page's <title>, e.g. "Japan Etiquette: 14 Unwritten Rules for
+ * Visitors". Fails the build rather than ship a title that runs past the budget.
+ */
+export function countryPageTitle(country: string, ruleCount: number): string {
+  const title =
+    country === 'global'
+      ? 'Etiquette Rules That Apply in Every Country'
+      : `${countryLabel(country)} Etiquette: ${ruleCount} Unwritten Rule${ruleCount === 1 ? '' : 's'} for Visitors`;
+  if (title.length > MAX_COUNTRY_TITLE) {
+    throw new Error(`Country page title for "${country}" is ${title.length} chars (max ${MAX_COUNTRY_TITLE}): ${title}`);
+  }
+  return title;
+}

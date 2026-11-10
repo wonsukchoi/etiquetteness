@@ -7,6 +7,7 @@ import CountryPills from '../components/CountryPills.astro';
 import heroImage from '../assets/hero-brunch-table.jpg';
 import { getCollection } from 'astro:content';
 import { organizationNode, websiteNode } from '../lib/organization';
+import { rulePath, ruleSlug } from '../lib/rules';
 
 const entries = (await getCollection('etiquette')).sort((a, b) =>
   a.data.title.localeCompare(b.data.title)
@@ -21,7 +22,7 @@ const jsonLd = {
 };
 ---
 
-<Layout title="Etiquetteness" description={description}>
+<Layout title="Unwritten Etiquette Rules by Country" description={description}>
   <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <div class="grid items-center gap-10 sm:grid-cols-[1.1fr_1fr] sm:gap-12">
@@ -63,7 +64,7 @@ const jsonLd = {
     {
       entries.map((entry) => (
         <EntryCard
-          href={`/etiquette/${entry.id}/`}
+          href={rulePath(entry.data.country, ruleSlug(entry.id))}
           title={entry.data.title}
           country={entry.data.country}
           category={entry.data.category}

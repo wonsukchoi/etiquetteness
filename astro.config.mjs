@@ -13,7 +13,9 @@ import react from '@astrojs/react';
 
 // Reads each entry's `updatedAt` frontmatter directly from disk (rather than via
 // astro:content, which isn't available yet at config-eval time) so the sitemap can
-// carry a real per-page <lastmod> instead of omitting it.
+// carry a real per-page <lastmod> instead of omitting it. Rules have no pages of
+// their own (they are sections of the country pages), so only the home, category
+// and country pages get one.
 function readEtiquetteLastmods() {
   const contentDir = fileURLToPath(new URL('./src/content/etiquette', import.meta.url));
   const entries = [];
@@ -30,7 +32,7 @@ function readEtiquetteLastmods() {
       const updatedAtRaw = frontmatter.match(/^updatedAt:\s*(\S+)/m)?.[1];
       const updatedAt = updatedAtRaw ? new Date(updatedAtRaw).toISOString() : undefined;
 
-      entries.push({ country: country.name, category, slug: file.replace(/\.mdx$/, ''), updatedAt });
+      entries.push({ country: country.name, category, updatedAt });
     }
   }
 
@@ -41,11 +43,7 @@ function readEtiquetteLastmods() {
 
   const lastmodByPath = new Map();
   lastmodByPath.set('/', siteLastmod);
-  lastmodByPath.set('/search/', siteLastmod);
 
-  for (const e of entries) {
-    lastmodByPath.set(`/etiquette/${e.country}/${e.slug}/`, e.updatedAt ?? siteLastmod);
-  }
   for (const category of new Set(entries.map((e) => e.category))) {
     lastmodByPath.set(`/category/${category}/`, latestOf(entries.filter((e) => e.category === category)));
   }
@@ -69,6 +67,9 @@ export default defineConfig({
 
   integrations: [
     sitemap({
+      // /search/ is a search box with no content of its own; it is noindex
+      // (search.astro), so it stays out of the sitemap too.
+      filter: (page) => new URL(page).pathname !== '/search/',
       serialize(item) {
         const lastmod = lastmodByPath.get(new URL(item.url).pathname) ?? siteLastmod;
         return { ...item, lastmod };

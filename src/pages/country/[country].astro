@@ -1,40 +1,87 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import EntryCard from '../../components/EntryCard.astro';
-import CategoryPills from '../../components/CategoryPills.astro';
 import CountryPills from '../../components/CountryPills.astro';
-import { COUNTRY_META, type Country } from '../../lib/countries';
-import { WEBSITE_ID } from '../../lib/organization';
-import { getCollection } from 'astro:content';
+import PhrasesSection from '../../components/PhrasesSection.astro';
+import { CATEGORIES, CATEGORY_META } from '../../lib/categories';
+import { COUNTRY_META, countryHeading, countryPageTitle, type Country } from '../../lib/countries';
+import { compareRules, ruleSlug } from '../../lib/rules';
+import { ORGANIZATION_ID, WEBSITE_ID, organizationNode, websiteNode } from '../../lib/organization';
+import { getCollection, getEntry, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import { FiChevronRight, FiAlertTriangle, FiInfo } from 'react-icons/fi';
 
+// Every rule for a country on one page, each as its own anchored section
+// (/country/japan/#business-card-two-hands). Rules used to have pages of their
+// own; those were too thin to get indexed, so they were folded in here and
+// their old URLs 301 to the anchors (scripts/generate-redirects.ts).
 export async function getStaticPaths() {
   const entries = await getCollection('etiquette');
   const countries = [...new Set(entries.map((e) => e.data.country))];
   return countries.map((country) => ({
     params: { country },
-    props: { entries: entries.filter((e) => e.data.country === country) },
+    props: { entries: entries.filter((e) => e.data.country === country).sort(compareRules) },
   }));
 }
 
 const { country } = Astro.params as { country: string };
 const { entries } = Astro.props;
+const phrasesEntry = await getEntry('phrases', country);
 const countryLabel = COUNTRY_META[country as Country]?.label ?? country.replace(/-/g, ' ');
 const description =
   COUNTRY_META[country as Country]?.description ?? `Etiquette rules for ${countryLabel}.`;
+const heading = countryHeading(country);
+
+const rendered = await Promise.all(entries.map((entry) => render(entry)));
+const rules = entries.map((entry, i) => ({ entry, slug: ruleSlug(entry.id), Content: rendered[i].Content }));
+
+const groups = CATEGORIES.map((category) => ({
+  category,
+  rules: rules.filter((r) => r.entry.data.category === category),
+})).filter((g) => g.rules.length > 0);
+
+// updatedAt is date-only (midnight UTC) while publishedAt carries a time, so a
+// same-day edit would otherwise put dateModified before datePublished — same
+// guard as the old per-rule pages, applied per rule before taking the newest.
+const isoDates = (dates: (Date | undefined)[]) =>
+  dates.filter((d): d is Date => d !== undefined).map((d) => d.toISOString()).sort();
+const publishedAtISO = isoDates(entries.map((e) => e.data.publishedAt ?? e.data.updatedAt))[0];
+const modifiedAtISO = isoDates(
+  entries.map((e) => {
+    const { publishedAt, updatedAt } = e.data;
+    if (updatedAt && publishedAt && updatedAt < publishedAt) return publishedAt;
+    return updatedAt ?? publishedAt;
+  })
+).at(-1);
+const lastUpdated = isoDates(entries.map((e) => e.data.updatedAt)).at(-1);
+const lastUpdatedLabel = lastUpdated
+  ? new Date(lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+  : undefined;
+
+// One share image per country, from scripts/generate-og-images.ts.
+const ogImage = `/og/country/${country}.png`;
 
 const pageURL = new URL(Astro.url.pathname, Astro.site);
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
     {
-      '@type': 'CollectionPage',
-      '@id': `${pageURL}#webpage`,
-      url: pageURL,
-      name: `Etiquette in ${countryLabel}`,
+      '@type': 'Article',
+      '@id': `${pageURL}#article`,
+      headline: heading,
       description,
+      about: { '@type': country === 'global' ? 'Thing' : 'Country', name: countryLabel },
+      datePublished: publishedAtISO,
+      dateModified: modifiedAtISO,
+      image: new URL(ogImage, Astro.site).toString(),
+      url: pageURL,
+      license: 'https://creativecommons.org/licenses/by-nc/4.0/',
+      mainEntityOfPage: { '@type': 'WebPage', '@id': pageURL.toString() },
       isPartOf: { '@id': WEBSITE_ID },
-      about: { '@type': 'Country', name: countryLabel },
+      publisher: { '@id': ORGANIZATION_ID },
+      author: { '@id': ORGANIZATION_ID },
     },
+    websiteNode(Astro.site!),
+    organizationNode(Astro.site!),
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
@@ -42,42 +89,155 @@ const jsonLd = {
         { '@type': 'ListItem', position: 2, name: countryLabel, item: pageURL.toString() },
       ],
     },
-    {
-      '@type': 'ItemList',
-      itemListElement: entries.map((entry, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        url: new URL(`/etiquette/${entry.id}/`, Astro.site).toString(),
-      })),
-    },
   ],
 };
+
+const tocLink =
+  'block py-1 text-stone-600 underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900';
 ---
 
-<Layout title={`Etiquette in ${countryLabel}`} description={description}>
+<Layout title={countryPageTitle(country, entries.length)} description={description} type="article" image={ogImage}>
   <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
-  <h1 class="font-display text-5xl font-semibold capitalize">{countryLabel}</h1>
+  <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-xs text-stone-500">
+    <a href="/" class="hover:text-stone-600">Home</a>
+    <FiChevronRight aria-hidden="true" size={12} />
+    <span aria-current="page">{countryLabel}</span>
+  </nav>
+
+  <h1 class="mt-4 font-display text-4xl font-semibold leading-tight min-[360px]:text-5xl">{heading}</h1>
   <p class="mt-4 max-w-2xl text-lg leading-relaxed text-stone-600">{description}</p>
-  <p class="mt-2 text-sm text-stone-500">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
-
-  <div class="mt-8 space-y-4">
-    <CategoryPills />
-    <CountryPills active={country} />
-  </div>
-
-  <h2 class="sr-only">Rules in {countryLabel}</h2>
-  <div class="entry-list mt-8 divide-y divide-stone-200" data-pagefind-ignore>
+  <p class="mt-3 text-sm text-stone-500">
+    {entries.length} rule{entries.length === 1 ? '' : 's'}
     {
-      entries.map((entry) => (
-        <EntryCard
-          href={`/etiquette/${entry.id}/`}
-          title={entry.data.title}
-          country={entry.data.country}
-          category={entry.data.category}
-          summary={entry.data.summary}
-        />
-      ))
+      lastUpdated && (
+        <>
+          <span aria-hidden="true"> · </span>
+          Last updated <time datetime={lastUpdated.slice(0, 10)}>{lastUpdatedLabel}</time>
+        </>
+      )
+    }
+  </p>
+
+  <nav aria-labelledby="contents-heading" class="mt-10 rounded-xl border border-stone-200 p-6" data-pagefind-ignore>
+    <h2 id="contents-heading" class="text-xs font-semibold uppercase tracking-widest text-stone-500">Contents</h2>
+    <div class="mt-4 grid gap-6 sm:grid-cols-2">
+      {
+        groups.map(({ category, rules: groupRules }) => (
+          <div>
+            <h3 class="flex items-center gap-2 text-sm font-semibold text-stone-900">
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background-color: ${CATEGORY_META[category].color}`} aria-hidden="true" />
+              {CATEGORY_META[category].label}
+            </h3>
+            <ul class="mt-1 text-sm">
+              {groupRules.map(({ entry, slug }) => (
+                <li>
+                  <a href={`#${slug}`} class={tocLink}>
+                    {entry.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+    {
+      phrasesEntry && (
+        <p class="mt-4 text-sm">
+          <a href="#travel-phrases" class={tocLink}>
+            Travel phrases
+          </a>
+        </p>
+      )
+    }
+  </nav>
+
+  <div class="mt-12 space-y-12">
+    {
+      rules.map(({ entry, slug, Content }) => {
+        const meta = CATEGORY_META[entry.data.category];
+        return (
+          <section aria-labelledby={slug} class="border-t border-stone-200 pt-10">
+            <p class="flex flex-wrap items-center gap-2 text-xs font-medium uppercase tracking-widest text-stone-500">
+              <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
+              {meta.label}
+              <span aria-hidden="true">·</span>
+              <span class="flex items-center gap-1">
+                {entry.data.severity === 'strict' ? (
+                  <FiAlertTriangle aria-hidden="true" size={12} />
+                ) : (
+                  <FiInfo aria-hidden="true" size={12} />
+                )}
+                {entry.data.severity}
+              </span>
+            </p>
+
+            <h2 id={slug} class="mt-3 scroll-mt-6 font-display text-3xl font-semibold leading-tight">
+              {entry.data.title}
+            </h2>
+
+            <p class="mt-3 text-lg leading-relaxed text-stone-600">{entry.data.summary}</p>
+
+            {entry.data.image && (
+              <figure class="mt-6">
+                <Image
+                  src={entry.data.image}
+                  alt={entry.data.imageAlt ?? entry.data.title}
+                  class="w-full rounded-lg object-cover"
+                  widths={[400, 800, 1200]}
+                  sizes="(min-width: 768px) 700px, 100vw"
+                  loading="lazy"
+                />
+                {entry.data.imageCredit && (
+                  <figcaption class="mt-2 text-xs text-stone-500">
+                    {entry.data.imageCreditUrl ? (
+                      <a href={entry.data.imageCreditUrl} target="_blank" rel="noopener noreferrer" class="underline hover:text-stone-600">
+                        {entry.data.imageCredit}
+                      </a>
+                    ) : (
+                      entry.data.imageCredit
+                    )}
+                  </figcaption>
+                )}
+              </figure>
+            )}
+
+            <div class="prose prose-stone mt-6 max-w-none prose-p:leading-relaxed">
+              <Content />
+            </div>
+
+            {entry.data.context && (
+              <>
+                <h3 class="mt-8 font-display text-lg font-semibold">Why it matters</h3>
+                <p class="mt-2 leading-relaxed text-stone-600">{entry.data.context}</p>
+              </>
+            )}
+
+            {entry.data.source && (
+              <p class="mt-6 text-xs text-stone-500">
+                Source:{' '}
+                {entry.data.sourceUrl ? (
+                  <a href={entry.data.sourceUrl} target="_blank" rel="noopener noreferrer" class="underline hover:text-stone-600">
+                    {entry.data.source}
+                  </a>
+                ) : (
+                  entry.data.source
+                )}
+              </p>
+            )}
+          </section>
+        );
+      })
     }
   </div>
+
+  {phrasesEntry && <PhrasesSection countryLabel={countryLabel} phrases={phrasesEntry.data.phrases} />}
+
+  <section aria-labelledby="other-countries-heading" class="mt-16 border-t border-stone-200 pt-10" data-pagefind-ignore>
+    <h2 id="other-countries-heading" class="font-display text-2xl font-semibold">Other countries</h2>
+    <div class="mt-6">
+      <CountryPills active={country} />
+    </div>
+  </section>
 </Layout>

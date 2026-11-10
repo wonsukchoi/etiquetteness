@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Search" description="Search etiquette rules by country, category, or keyword.">
+<Layout title="Search" description="Search etiquette rules by country, category, or keyword." noindex>
   <h1 class="font-display text-4xl font-semibold">Search</h1>
   <p class="mt-2 text-stone-600">Find a rule by country, category, or keyword.</p>
 
@@ -15,7 +15,8 @@ import Layout from '../layouts/Layout.astro';
       if (typeof PagefindUI === 'undefined') return;
       new PagefindUI({
         element: '#search',
-        showSubResults: false,
+        // Each country page holds many rules; sub-results link straight to the rule's section.
+        showSubResults: true,
         showImages: false,
         // Arriving from the "Search" link, the visitor should be able to type at once.
         autofocus: true,

@@ -1,0 +1,37 @@
+---
+interface Phrase {
+  phrase: string;
+  translation: string;
+  pronunciation: string;
+  note?: string;
+}
+
+interface Props {
+  countryLabel: string;
+  phrases: Phrase[];
+}
+
+const { countryLabel, phrases } = Astro.props;
+---
+
+<section id="travel-phrases" aria-labelledby="travel-phrases-heading" class="mt-12 scroll-mt-6 border-t border-stone-200 pt-10">
+  <h2 id="travel-phrases-heading" class="font-display text-2xl font-semibold text-stone-900">
+    Travel Phrases
+  </h2>
+  <p class="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
+    A few core phrases to have ready in {countryLabel} — etiquette tells you how to behave, these tell you what to say.
+  </p>
+
+  <dl class="mt-6 grid gap-3 sm:grid-cols-2">
+    {
+      phrases.map(({ phrase, translation, pronunciation, note }) => (
+        <div class="rounded-lg border border-stone-200 px-4 py-3">
+          <dt class="text-xs font-medium uppercase tracking-wide text-stone-500">{phrase}</dt>
+          <dd class="mt-1 font-display text-lg font-semibold text-stone-900">{translation}</dd>
+          <dd class="text-sm text-stone-500">{pronunciation}</dd>
+          {note && <dd class="mt-1 text-xs leading-relaxed text-stone-400">{note}</dd>}
+        </div>
+      ))
+    }
+  </dl>
+</section>

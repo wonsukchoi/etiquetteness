@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
+import { rulePath, ruleSlug } from '../lib/rules';
 
 export async function GET(context: { site: URL }) {
   const entries = await getCollection('etiquette');
@@ -17,7 +18,7 @@ export async function GET(context: { site: URL }) {
     items: sorted.map((entry) => ({
       title: entry.data.title,
       description: entry.data.summary,
-      link: `/etiquette/${entry.id}/`,
+      link: rulePath(entry.data.country, ruleSlug(entry.id)),
       pubDate: entry.data.updatedAt ?? entry.data.publishedAt,
       categories: [entry.data.country, entry.data.category],
     })),
