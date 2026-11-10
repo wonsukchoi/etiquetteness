@@ -7,9 +7,6 @@ const etiquette = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
-      // Shorter <title> for entries whose headline plus " · Etiquetteness" runs
-      // past 80 characters. The page H1, breadcrumb and JSON-LD keep `title`.
-      seoTitle: z.string().max(64).optional(),
       country: z.string(), // "korea", "japan", "global", ...
       category: z.enum(['dining', 'business', 'social', 'travel', 'gifts', 'home', 'dating']),
       severity: z.enum(['strict', 'casual']),

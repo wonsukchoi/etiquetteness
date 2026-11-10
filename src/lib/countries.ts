@@ -25,9 +25,9 @@ export type Country = (typeof COUNTRIES)[number];
 // "global" keeps its globe glyph since that's a single-codepoint symbol
 // emoji, not a regional-indicator flag, so it renders consistently.
 //
-// `description` synthesizes the actual entries filed under that country —
+// `description` synthesizes the actual rules filed under that country —
 // it doesn't introduce new claims, just ties together facts already
-// verified and sourced on the individual entry pages.
+// verified and sourced in the rule sections of the country page.
 export const COUNTRY_META: Record<Country, { label: string; code: string; description: string }> = {
   japan: {
     label: 'Japan',
@@ -153,44 +153,4 @@ export function countryPageTitle(country: string, ruleCount: number): string {
     throw new Error(`Country page title for "${country}" is ${title.length} chars (max ${MAX_COUNTRY_TITLE}): ${title}`);
   }
   return title;
-}
-
-// Words that already tie a title to its country, so the <title> doesn't need
-// the "Country: " prefix (e.g. "Do the Thai wai" on a Thailand entry).
-const COUNTRY_TERMS: Record<Exclude<Country, 'global'>, string[]> = {
-  japan: ['japan', 'japanese'],
-  china: ['china', 'chinese'],
-  korea: ['korea', 'korean'],
-  thailand: ['thailand', 'thai'],
-  india: ['india', 'indian'],
-  'saudi-arabia': ['saudi'],
-  france: ['france', 'french'],
-  germany: ['germany', 'german'],
-  italy: ['italy', 'italian'],
-  'united-kingdom': ['united kingdom', 'uk', 'british', 'britain', 'england', 'english'],
-  mexico: ['mexico', 'mexican'],
-  guam: ['guam', 'chamorro'],
-  philippines: ['philippines', 'filipino'],
-  brazil: ['brazil', 'brazilian'],
-  vietnam: ['vietnam', 'vietnamese'],
-};
-
-// Same budget as the seoTitle schema: the layout appends " · Etiquetteness"
-// (16 characters) and the full <title> should stay within 80.
-const MAX_ENTRY_TITLE = 64;
-
-/**
- * The <title> text for an entry. Many rules read the same across countries
- * ("Take your shoes off indoors" exists for Japan and Vietnam), so the country
- * leads the title, in the "Brazil: …" form the hand-written seoTitles use.
- * Left as-is for global entries, titles that already name the country or its
- * people, and when the prefix would push it past the title budget.
- */
-export function entryPageTitle(country: string, title: string): string {
-  if (country === 'global' || !(country in COUNTRY_TERMS)) return title;
-  const terms = COUNTRY_TERMS[country as Exclude<Country, 'global'>];
-  const lower = title.toLowerCase();
-  if (terms.some((term) => new RegExp(`\\b${term}\\b`).test(lower))) return title;
-  const prefixed = `${COUNTRY_META[country as Country].label}: ${title}`;
-  return prefixed.length <= MAX_ENTRY_TITLE ? prefixed : title;
 }

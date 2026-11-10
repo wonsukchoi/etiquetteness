@@ -9,7 +9,7 @@ The etiquette nobody writes down: unwritten cultural and social rules, by countr
 ```
 src/content/etiquette/<country>/<slug>.mdx   # one file per rule
 src/content.config.ts                        # content schema
-src/pages/                                   # home, /etiquette/[slug], /country/[x], /category/[x], /search
+src/pages/                                   # home, /country/[x] (every rule in full), /category/[x], /search
 ```
 
 ## Commands
@@ -22,7 +22,7 @@ src/pages/                                   # home, /etiquette/[slug], /country
 
 ## Adding content
 
-Drop a new `.mdx` file under `src/content/etiquette/<country>/` following the frontmatter schema in `src/content.config.ts`. Pages for the entry, its country, and its category are generated automatically.
+Drop a new `.mdx` file under `src/content/etiquette/<country>/` following the frontmatter schema in `src/content.config.ts`. It appears automatically as a section of its country page (`/country/<country>/#<file-name>`) and in its category list. Rules no longer get pages of their own: the old `/etiquette/<country>/<slug>/` URLs 301 to those sections via `public/_redirects`, which `scripts/generate-redirects.ts` writes at build time.
 
 Before adding a new entry, check whether an existing entry in another country already covers the same underlying custom (e.g. chopstick taboos) — if the reasoning is genuinely different per country, add it as its own entry; if it's a near-duplicate, fold it into the existing entry as a bullet instead.
 
