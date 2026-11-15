@@ -41,5 +41,10 @@
     "satori": "^0.63.2",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "@tailwindcss/typography": {
+      "postcss-selector-parser": "6.1.5"
+    }
   }
 }
