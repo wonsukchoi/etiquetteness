@@ -10,6 +10,7 @@ import * as yaml from 'js-yaml';
 import { CATEGORIES, CATEGORY_META, type Category } from '../src/lib/categories.ts';
 import { COUNTRIES, COUNTRY_META } from '../src/lib/countries.ts';
 import { compareRules, rulePath } from '../src/lib/rules.ts';
+import { GUIDES, guidePath } from '../src/lib/guides.ts';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const contentDir = path.join(root, 'src/content/etiquette');
@@ -64,7 +65,7 @@ function main() {
   );
   lines.push('');
   lines.push(
-    `Content (everything under /country/ and /category/) is licensed CC BY-NC 4.0 — reuse and citation with attribution is welcome for non-commercial purposes. Source code is MIT. Full terms and sourcing methodology: ${site}/about/`
+    `Content (everything under /country/, /category/ and /guide/) is licensed CC BY-NC 4.0 — reuse and citation with attribution is welcome for non-commercial purposes. Source code is MIT. Full terms and sourcing methodology: ${site}/about/`
   );
   lines.push('');
 
@@ -73,6 +74,10 @@ function main() {
     const meta = CATEGORY_META[category];
     lines.push(`- [${meta.label}](${site}/category/${category}/): ${meta.description}`);
   }
+  lines.push('');
+
+  lines.push('## Guides');
+  for (const g of GUIDES) lines.push(`- [${g.title}](${site}${guidePath(g.slug)}): ${g.description}`);
   lines.push('');
 
   lines.push('## Countries');
