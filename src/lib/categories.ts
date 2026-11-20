@@ -3,7 +3,7 @@ export type Category = (typeof CATEGORIES)[number];
 
 // Each category gets one fixed accent color, used sparingly (a small dot,
 // an active-tab underline) — not painted across the whole card.
-export const CATEGORY_META: Record<Category, { label: string; color: string; description: string }> = {
+export const CATEGORY_META: Record<Category, { label: string; color: string; description: string; metaDescription?: string }> = {
   dining: {
     label: 'Dining',
     color: '#B5502A',
@@ -33,6 +33,7 @@ export const CATEGORY_META: Record<Category, { label: string; color: string; des
     color: '#A8842C',
     description:
       'What you give, how you wrap it, even the number of stems in a bouquet, can carry unintended meaning: a color tied to funerals in one country, a homophone for bad luck in another. These entries cover the gift-giving mistakes that are easy to make with the best intentions.',
+    metaDescription: "What you give, how you wrap it, even the number of stems in a bouquet can carry unintended meaning: a color tied to funerals, a homophone for bad luck.",
   },
   home: {
     label: 'Home',
@@ -45,5 +46,6 @@ export const CATEGORY_META: Record<Category, { label: string; color: string; des
     color: '#8E4A9B',
     description:
       "Who initiates, who pays, how affection is shown in public — dating norms vary more than almost any other category, and getting them wrong can read as either too forward or coldly indifferent. These entries cover the unspoken rules of courtship from country to country.",
+    metaDescription: "Who initiates, who pays, how affection is shown in public: dating norms vary more than almost any other category, and getting them wrong can read badly.",
   },
 };
