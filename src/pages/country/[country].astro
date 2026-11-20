@@ -5,6 +5,7 @@ import PhrasesSection from '../../components/PhrasesSection.astro';
 import { CATEGORIES, CATEGORY_META } from '../../lib/categories';
 import { COUNTRY_META, countryHeading, countryPageTitle, type Country } from '../../lib/countries';
 import { compareRules, ruleSlug } from '../../lib/rules';
+import { guidePath, guidesForCountry } from '../../lib/guides';
 import { ORGANIZATION_ID, WEBSITE_ID, organizationNode, websiteNode } from '../../lib/organization';
 import { getCollection, getEntry, render } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -118,6 +119,14 @@ const tocLink =
       )
     }
   </p>
+
+  {
+    guidesForCountry(country).map((g) => (
+      <p class="mt-4 text-sm" data-pagefind-ignore>
+        Related guide: <a href={guidePath(g.slug)} class="underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900">{g.linkText}</a>
+      </p>
+    ))
+  }
 
   <nav aria-labelledby="contents-heading" class="mt-10 rounded-xl border border-stone-200 p-6" data-pagefind-ignore>
     <h2 id="contents-heading" class="text-xs font-semibold uppercase tracking-widest text-stone-500">Contents</h2>
