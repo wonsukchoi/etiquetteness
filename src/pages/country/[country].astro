@@ -9,7 +9,7 @@ import { guidePath, guidesForCountry } from '../../lib/guides';
 import { ORGANIZATION_ID, WEBSITE_ID, organizationNode, websiteNode } from '../../lib/organization';
 import { getCollection, getEntry, render } from 'astro:content';
 import { Image } from 'astro:assets';
-import { FiChevronRight, FiAlertTriangle, FiInfo } from 'react-icons/fi';
+import { FiArrowUp, FiChevronRight, FiAlertTriangle, FiInfo } from 'react-icons/fi';
 
 // Every rule for a country on one page, each as its own anchored section
 // (/country/japan/#business-card-two-hands). Rules used to have pages of their
@@ -235,6 +235,18 @@ const tocLink =
                 )}
               </p>
             )}
+
+            {/* Country pages run 12,000-23,000px on a phone (16 rules for Japan) and the
+                header is not sticky, so the Contents block at the top is otherwise a long
+                scroll back. Plain anchor, no script; 44px tall for a thumb. */}
+            <a
+              href="#contents-heading"
+              data-pagefind-ignore
+              class="mt-6 inline-flex min-h-11 items-center gap-1.5 text-sm text-stone-500 underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900"
+            >
+              <FiArrowUp aria-hidden="true" size={14} />
+              Back to contents
+            </a>
           </section>
         );
       })
