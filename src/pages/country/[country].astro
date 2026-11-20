@@ -96,7 +96,7 @@ const tocLink =
   'block py-1 text-stone-600 underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900';
 ---
 
-<Layout title={countryPageTitle(country, entries.length)} description={description} type="article" image={ogImage}>
+<Layout title={countryPageTitle(country, entries.length)} description={COUNTRY_META[country as Country]?.metaDescription ?? description} type="article" image={ogImage}>
   <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-xs text-stone-500">
