@@ -6,6 +6,7 @@ import CountryPills from '../../components/CountryPills.astro';
 import { CATEGORIES, CATEGORY_META, type Category } from '../../lib/categories';
 import { WEBSITE_ID } from '../../lib/organization';
 import { rulePath, ruleSlug } from '../../lib/rules';
+import { guidePath, guidesForCategory } from '../../lib/guides';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -52,7 +53,7 @@ const jsonLd = {
 };
 ---
 
-<Layout title={`${meta.label} etiquette`} description={meta.description}>
+<Layout title={`${meta.label} etiquette`} description={meta.metaDescription ?? meta.description}>
   <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <div class="flex items-center gap-3">
     <span class="h-3 w-3 shrink-0 rounded-full" style={`background-color: ${meta.color}`} aria-hidden="true" />
@@ -60,6 +61,14 @@ const jsonLd = {
   </div>
   <p class="mt-4 max-w-2xl text-lg leading-relaxed text-stone-600">{meta.description}</p>
   <p class="mt-2 text-sm text-stone-500">{entries.length} rule{entries.length === 1 ? '' : 's'}.</p>
+
+  {
+    guidesForCategory(category).map((g) => (
+      <p class="mt-4 text-sm" data-pagefind-ignore>
+        Related guide: <a href={guidePath(g.slug)} class="underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900">{g.linkText}</a>
+      </p>
+    ))
+  }
 
   <div class="mt-8 space-y-4">
     <CategoryPills active={category} />
