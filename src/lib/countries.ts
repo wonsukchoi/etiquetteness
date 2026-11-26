@@ -28,36 +28,41 @@ export type Country = (typeof COUNTRIES)[number];
 // `description` synthesizes the actual rules filed under that country —
 // it doesn't introduce new claims, just ties together facts already
 // verified and sourced in the rule sections of the country page.
-export const COUNTRY_META: Record<Country, { label: string; code: string; description: string }> = {
+export const COUNTRY_META: Record<Country, { label: string; code: string; description: string; metaDescription?: string }> = {
   japan: {
     label: 'Japan',
     code: 'JP',
     description:
       "Japanese etiquette runs on precise small rituals — presenting a business card with both hands, never planting chopsticks upright in rice, removing your shoes at the genkan — each one a compact signal of respect that's easy to miss if you don't know to look for it.",
+    metaDescription: "Japanese etiquette runs on small rituals: a business card in both hands, chopsticks never upright in rice, shoes off at the genkan.",
   },
   china: {
     label: 'China',
     code: 'CN',
     description:
       "Chinese etiquette carries real symbolic weight: a homophone can turn an ordinary gift into a bad-luck one, and even how you eat a whole fish can read as tempting fate. Business and dining customs here reward attention to detail most visitors don't expect.",
+    metaDescription: "Chinese etiquette carries symbolic weight: a homophone can turn a gift into bad luck, and how you eat a whole fish can read as tempting fate.",
   },
   korea: {
     label: 'Korea',
     code: 'KR',
     description:
       "Korean etiquette is built around a clear sense of age and rank (nunchi), from how you bow and hand over a business card to how you drink with someone older than you. Getting the hierarchy right matters more here than in most cultures on this list.",
+    metaDescription: "Korean etiquette is built on age and rank (nunchi), from how you bow and hand over a business card to how you drink with someone older.",
   },
   thailand: {
     label: 'Thailand',
     code: 'TH',
     description:
       'Thai etiquette centers on the body: the head is treated as sacred, the feet as the opposite, and the wai greeting itself scales in formality by exactly who you\'re greeting. Buddhist tradition runs quietly under most of these customs.',
+    metaDescription: "Thai etiquette centers on the body: the head is sacred, the feet the opposite, and the wai greeting scales in formality with who you greet.",
   },
   india: {
     label: 'India',
     code: 'IN',
     description:
       'Etiquette across India varies by region and religion, but a few norms hold broadly: the right hand for eating and giving, namaste as a contact-free default greeting, and real color and material associations (white, leather) worth knowing before you gift something.',
+    metaDescription: "Etiquette in India varies by region and religion, but some norms hold broadly: the right hand for eating and giving, and namaste as a default greeting.",
   },
   'saudi-arabia': {
     label: 'Saudi Arabia',
@@ -82,36 +87,42 @@ export const COUNTRY_META: Record<Country, { label: string; code: string; descri
     code: 'IT',
     description:
       "Italian etiquette has firm, specific opinions — no cappuccino after a meal, no cheese on seafood pasta, and dressing with intention even for a quick errand (bella figura). These aren't old-fashioned rules; they're actively enforced by how Italians actually behave.",
+    metaDescription: "Italian etiquette has firm opinions: no cappuccino after a meal, no cheese on seafood pasta, and dressing with intention even for a quick errand.",
   },
   'united-kingdom': {
     label: 'United Kingdom',
     code: 'GB',
     description:
       'British etiquette runs on fairness and understatement: queue and wait your turn, take your turn buying a round at the pub, and use the weather as safe, low-stakes small talk with a stranger. None of it is written down; all of it is closely watched.',
+    metaDescription: "British etiquette runs on fairness and understatement: queue, take your turn buying a round at the pub, and use the weather for safe small talk.",
   },
   mexico: {
     label: 'Mexico',
     code: 'MX',
     description:
       'Mexican etiquette prioritizes relationship over efficiency: expect small talk before business, warmth in greetings that scales with familiarity, and real seasonal meaning behind gifts like marigolds, reserved specifically for Día de los Muertos.',
+    metaDescription: "Mexican etiquette puts relationship over efficiency: small talk before business, greetings that warm with familiarity, and gifts with seasonal meaning.",
   },
   guam: {
     label: 'Guam',
     code: 'GU',
     description:
       "Chamorro etiquette on Guam centers on reciprocity and respect for elders: chenchule' keeps gifts and favors circulating through the community, fiestas expect a polite back-and-forth before you accept food, and the nginge' greeting is a real physical gesture of deference, not just a nod.",
+    metaDescription: "Chamorro etiquette on Guam centers on reciprocity and respect for elders: chenchule' keeps gifts circulating, and the nginge' greeting shows deference.",
   },
   philippines: {
     label: 'Philippines',
     code: 'PH',
     description:
       "Filipino etiquette builds respect directly into the language: adding \"po\" or \"opo\" when speaking to someone older or in authority is a small habit that signals real deference — dropping it can read as overly familiar even when nothing else about the exchange is impolite.",
+    metaDescription: "Filipino etiquette builds respect into the language: adding \"po\" or \"opo\" when speaking to someone older or in authority signals real deference.",
   },
   brazil: {
     label: 'Brazil',
     code: 'BR',
     description:
       "Brazilian etiquette runs warm and physical — a handshake gives way to a cheek kiss once you know someone, personal space runs closer than most Western visitors expect, and showing up exactly on time to a dinner can actually catch your host off guard (hora brasileira). Gift-giving carries real symbolic weight too: purple reads as funeral colors, and anything sharp suggests you want to cut the relationship off.",
+    metaDescription: "Brazilian etiquette runs warm and physical: a cheek kiss once you know someone, closer personal space, and punctuality that can catch a host off guard.",
   },
   vietnam: {
     label: 'Vietnam',

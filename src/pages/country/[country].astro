@@ -5,10 +5,11 @@ import PhrasesSection from '../../components/PhrasesSection.astro';
 import { CATEGORIES, CATEGORY_META } from '../../lib/categories';
 import { COUNTRY_META, countryHeading, countryPageTitle, type Country } from '../../lib/countries';
 import { compareRules, ruleSlug } from '../../lib/rules';
+import { guidePath, guidesForCountry } from '../../lib/guides';
 import { ORGANIZATION_ID, WEBSITE_ID, organizationNode, websiteNode } from '../../lib/organization';
 import { getCollection, getEntry, render } from 'astro:content';
 import { Image } from 'astro:assets';
-import { FiChevronRight, FiAlertTriangle, FiInfo } from 'react-icons/fi';
+import { FiArrowUp, FiChevronRight, FiAlertTriangle, FiInfo } from 'react-icons/fi';
 
 // Every rule for a country on one page, each as its own anchored section
 // (/country/japan/#business-card-two-hands). Rules used to have pages of their
@@ -96,7 +97,7 @@ const tocLink =
   'block py-1 text-stone-600 underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900';
 ---
 
-<Layout title={countryPageTitle(country, entries.length)} description={description} type="article" image={ogImage}>
+<Layout title={countryPageTitle(country, entries.length)} description={COUNTRY_META[country as Country]?.metaDescription ?? description} type="article" image={ogImage}>
   <script is:inline type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-xs text-stone-500">
@@ -118,6 +119,14 @@ const tocLink =
       )
     }
   </p>
+
+  {
+    guidesForCountry(country).map((g) => (
+      <p class="mt-4 text-sm" data-pagefind-ignore>
+        Related guide: <a href={guidePath(g.slug)} class="underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900">{g.linkText}</a>
+      </p>
+    ))
+  }
 
   <nav aria-labelledby="contents-heading" class="mt-10 rounded-xl border border-stone-200 p-6" data-pagefind-ignore>
     <h2 id="contents-heading" class="text-xs font-semibold uppercase tracking-widest text-stone-500">Contents</h2>
@@ -226,6 +235,18 @@ const tocLink =
                 )}
               </p>
             )}
+
+            {/* Country pages run 12,000-23,000px on a phone (16 rules for Japan) and the
+                header is not sticky, so the Contents block at the top is otherwise a long
+                scroll back. Plain anchor, no script; 44px tall for a thumb. */}
+            <a
+              href="#contents-heading"
+              data-pagefind-ignore
+              class="mt-6 inline-flex min-h-11 items-center gap-1.5 text-sm text-stone-500 underline decoration-stone-300 underline-offset-4 hover:text-stone-900 hover:decoration-stone-900"
+            >
+              <FiArrowUp aria-hidden="true" size={14} />
+              Back to contents
+            </a>
           </section>
         );
       })

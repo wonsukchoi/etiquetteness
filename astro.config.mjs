@@ -51,6 +51,10 @@ function readEtiquetteLastmods() {
     lastmodByPath.set(`/country/${country}/`, latestOf(entries.filter((e) => e.country === country)));
   }
 
+  // Cross-country guides (src/lib/guides.ts) carry the date they were written, as astro.config
+  // cannot import TypeScript; keep these in step with GUIDES[].updatedAt.
+  lastmodByPath.set('/guide/chopstick-etiquette/', new Date('2026-11-20').toISOString());
+
   return { lastmodByPath, siteLastmod };
 }
 
